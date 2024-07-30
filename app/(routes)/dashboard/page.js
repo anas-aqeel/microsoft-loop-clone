@@ -1,8 +1,11 @@
 import React from 'react'
+import Header from '../_components/Header'
 
 const Dashboard = () => {
   return (
-    <div>Dashboard</div>
+    <div>
+      <Header />
+    </div>
   )
 }
 
