@@ -1,16 +1,19 @@
 "use client"
 import React, { useState } from 'react'
 import { LayoutGrid, Plus, SlidersHorizontal } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 
 const WorkSpace = () => {
   let [workSpaceList, setWorkSpaceList] = useState([])
+  let { push } = useRouter()
   return (
     <div className="max-w-7xl w-full mx-auto px-3 md:px-6 mt-8 md:mt-20">
       <div className="flex justify-between items-center">
         <h3 className="text-3xl font-medium">Hello, Good Morning</h3>
-        <button className="bg-black rounded-full text-white p-1.5 font-bold">
+        <Button onClick={() => push('/createworkspace')} className="rounded-full text-white p-1.5">
           <Plus />
-        </button>
+        </Button>
       </div>
       <div className="flex justify-between items-center mt-14">
         <h3 className="text-blue-500 font-medium text-xl">Workspaces</h3>
@@ -31,13 +34,15 @@ const WorkSpace = () => {
             Workspaces let you plan, think, and create together — all in the
             same place
           </p>
-          <button className="flex items-center gap-2 py-1.5 mt-3 px-2 rounded-md border border-gray-400">
+          <Button onClick={() => push('/createworkspace')} variant="outline" className="bg-transparent flex gap-3 py-1.5 mt-3 px-2">
             <Plus />
             New Workspace
-          </button>
+          </Button>
         </div>
       ) : (
-        <div></div>
+        <div>
+          Workspce List
+        </div>
       )}
     </div>
   )
