@@ -2,7 +2,7 @@
 import { OrganizationSwitcher, useAuth, UserButton } from '@clerk/nextjs'
 import React from 'react'
 
-const Header = () => {
+const Header = ({ logo = true }) => {
   let { orgId } = useAuth()
   return (
     <div className="  ">
@@ -10,9 +10,9 @@ const Header = () => {
         className="flex justify-between py-2.5 px-3  items-center
        mx-auto"
       >
-        <div className="flex items-center gap-2">
-          <img src="/images/loop.png" className="w-[40px] h-auto" />
-          <h5 className="font-black text-xl">TrEE</h5>
+        <div className={`flex items-center gap-2 ${logo ? 'visible' : 'invisible'}`}>
+          <img src="/images/Sync.png" className="w-[40px] h-auto" />
+          <h5 className="font-black text-xl">Sync</h5>
         </div>
         <OrganizationSwitcher
           afterCreateOrganizationUrl={'/dashboard#:slug'}
