@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ImagePlus, SmilePlus } from 'lucide-react'
+import { ImagePlus, LoaderCircle, SmilePlus } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import CoverPicker from '../_components/CoverPicker'
@@ -11,19 +11,21 @@ import { useAuth, useUser } from '@clerk/nextjs'
 import { doc, setDoc } from 'firebase/firestore'
 import { useToast } from '@/components/ui/use-toast'
 import { db } from '@/config/FirebaseConfig'
+import { useRouter } from 'next/navigation'
 
 const CreateWorkSpace = () => {
     let { user } = useUser()
     let { orgId } = useAuth()
     let { toast } = useToast()
-    let [emoji, setEmoji] = useState()
+    let { replace } = useRouter()
     let [title, setTitle] = useState('')
+    let [emoji, setEmoji] = useState(null)
     let [loading, setLoading] = useState(false)
     let [coverImg, setCoverImg] = useState('/images/workspacecover.webp')
 
     let onWorkSpaceCreate = async () => {
         setLoading(true)
-        let docId = Date.now()
+        let docId = Date.now().toString()
         let docRef = doc(db, 'workspace', docId);
         try {
             await setDoc(docRef, {
@@ -34,6 +36,7 @@ const CreateWorkSpace = () => {
                 orgId: orgId ? orgId : user.primaryEmailAddressId,
                 createdBy: user?.primaryEmailAddress?.emailAddress
             });
+            replace(`/workspace/${docId}`)
             toast({
                 title: "Workspace Successfully Created",
                 description: "Your Workspace has been saved to the database."
@@ -46,7 +49,7 @@ const CreateWorkSpace = () => {
         } finally {
             setLoading(false)
             setCoverImg('/images/workspacecover.webp')
-            setEmoji()
+            setEmoji(null)
             setTitle('')
         }
     }
@@ -85,11 +88,12 @@ const CreateWorkSpace = () => {
 
                         <div className='w-full'>
                             <Label htmlFor="title">Titile</Label>
-                            <Input type="title" onChange={(e) => setTitle(e.target.value)} className="w-full bg-gray-50 border-none" id="title" placeholder="Design Sprit " />
+                            <Input type="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-gray-50 border-none" id="title" placeholder="Design Sprit " />
                         </div>
                     </div>
                     <div className='flex justify-end gap-3 mt-10'>
-                        <Button disabled={title == '' && loading} onClick={onWorkSpaceCreate} className="bg-gray-200 text-black  hover:text-white px-8 rounded-lg">
+                        <Button disabled={title == '' || loading} onClick={onWorkSpaceCreate} className="bg-gray-200 text-black  hover:text-white flex px-2 items-center gap-3 w-28 rounded-lg">
+                            {loading && <LoaderCircle className="animate-spin" />}
                             Create
                         </Button>
                         <Button variant="outline" className="px-8 rounded-lg">
