@@ -8,10 +8,11 @@ import React, { useState } from 'react'
 import CoverPicker from '../_components/CoverPicker'
 import EmojiPickerConponent from '../_components/EmojiPickerComponent'
 import { useAuth, useUser } from '@clerk/nextjs'
-import { doc, setDoc } from 'firebase/firestore'
+import { collection, doc, setDoc } from 'firebase/firestore'
 import { useToast } from '@/components/ui/use-toast'
 import { db } from '@/config/FirebaseConfig'
 import { useRouter } from 'next/navigation'
+import { uid } from 'uid'
 
 const CreateWorkSpace = () => {
     let { user } = useUser()
@@ -25,18 +26,32 @@ const CreateWorkSpace = () => {
 
     let onWorkSpaceCreate = async () => {
         setLoading(true)
-        let docId = Date.now().toString()
-        let docRef = doc(db, 'workspace', docId);
+        let workspaceId = Date.now().toString()
+        let docRef = doc(db, 'workspace', workspaceId);
         try {
             await setDoc(docRef, {
                 title,
                 coverImg,
                 emoji,
-                id: docId,
+                id: workspaceId,
                 orgId: orgId ? orgId : user.primaryEmailAddressId,
                 createdBy: user?.primaryEmailAddress?.emailAddress
             });
-            replace(`/workspace/${docId}`)
+            let docId = uid()
+            await setDoc(doc(db, "Documents", docId), {
+                title: "Untitled",
+                coverImg,
+                emoji: null,
+                createdBy: user?.primaryEmailAddress?.emailAddress,
+                workspaceId,
+                id: docId,
+                documentOutput: []
+            })
+            await setDoc(doc(db, "DocumentOutputs", docId), {
+                docId,
+                output: []
+            })
+            replace(`/workspace/${workspaceId}/${docId}`)
             toast({
                 title: "Workspace Successfully Created",
                 description: "Your Workspace has been saved to the database."
