@@ -2,16 +2,54 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ImagePlus, Plus, SmilePlus } from 'lucide-react'
+import { ImagePlus, SmilePlus } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
 import CoverPicker from '../_components/CoverPicker'
 import EmojiPickerConponent from '../_components/EmojiPickerComponent'
+import { useAuth, useUser } from '@clerk/nextjs'
+import { doc, setDoc } from 'firebase/firestore'
+import { useToast } from '@/components/ui/use-toast'
+import { db } from '@/config/FirebaseConfig'
 
 const CreateWorkSpace = () => {
-    let [coverImg, setCoverImg] = useState('/images/workspacecover.webp')
-    let [title, setTitle] = useState('')
+    let { user } = useUser()
+    let { orgId } = useAuth()
+    let { toast } = useToast()
     let [emoji, setEmoji] = useState()
+    let [title, setTitle] = useState('')
+    let [loading, setLoading] = useState(false)
+    let [coverImg, setCoverImg] = useState('/images/workspacecover.webp')
+
+    let onWorkSpaceCreate = async () => {
+        setLoading(true)
+        let docId = Date.now()
+        let docRef = doc(db, 'workspace', docId);
+        try {
+            await setDoc(docRef, {
+                title,
+                coverImg,
+                emoji,
+                id: docId,
+                orgId: orgId ? orgId : user.primaryEmailAddressId,
+                createdBy: user?.primaryEmailAddress?.emailAddress
+            });
+            toast({
+                title: "Workspace Successfully Created",
+                description: "Your Workspace has been saved to the database."
+            });
+        } catch (e) {
+            toast({
+                title: "Error Creating Workspace",
+                description: `${e.message}`
+            });
+        } finally {
+            setLoading(false)
+            setCoverImg('/images/workspacecover.webp')
+            setEmoji()
+            setTitle('')
+        }
+    }
     return (
         <div className='py-3 px-4 w-full h-[99vh] flex justify-center items-center'>
             <div className='rounded-2xl max-w-xl shadow-xl bg-white'>
@@ -51,7 +89,7 @@ const CreateWorkSpace = () => {
                         </div>
                     </div>
                     <div className='flex justify-end gap-3 mt-10'>
-                        <Button disabled={title == ''} className="bg-gray-200 text-black px-8 rounded-lg">
+                        <Button disabled={title == '' && loading} onClick={onWorkSpaceCreate} className="bg-gray-200 text-black  hover:text-white px-8 rounded-lg">
                             Create
                         </Button>
                         <Button variant="outline" className="px-8 rounded-lg">
