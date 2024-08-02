@@ -1,16 +1,13 @@
-"use client";
+"use client"
 import { Button } from "@/components/ui/button";
-import { db } from "@/config/FirebaseConfig";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
-import { ArrowLeftFromLine, ArrowRightFromLine, History, ImagePlus, Loader2, Pencil, Plus, Smile, Trash2, X } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Loader2, Trash2, X, ImagePlus } from "lucide-react";
 import Header from "../../_components/Header";
-import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
 import CoverPicker from "../../_components/CoverPicker";
-import { uid } from "uid";
-import { useAuth, useUser } from "@clerk/nextjs";
-import { toast } from "@/components/ui/use-toast";
-import { useRouter, useParams } from "next/navigation";
+import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
+import { useWorkspace, WorkspaceProvider } from "../_context";
+import { useParams, useRouter } from "next/navigation";
+
+
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     return (
@@ -20,109 +17,13 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     );
 };
 
-const Layout = ({ children }) => {
-    let { workspaceId, documentId } = useParams()
-    const [collapse, setCollapse] = useState(false);
-    const [loading, setLoading] = useState(true);
-    let [pending, setPending] = useState(false);
-
-
-
-    let { user } = useUser()
-    let { push } = useRouter()
-
-    const [data, setData] = useState({
-        workspaceName: "",
-        emoji: "",
-        createdBy: "",
-        workspaceMembers: "",
-        emoji: "",
-        documents: [],
-        name: '',
-        coverImg: "/images/workspacecover.webp"
-    });
-
-
-    let createDocument = async () => {
-        setPending(true)
-        let docId = uid()
-        try {
-            await setDoc(doc(db, "Documents", docId), {
-                title: "Untitled",
-                coverImg: '/images/workspacecover.webp',
-                emoji: null,
-                createdBy: user?.primaryEmailAddress?.emailAddress,
-                workspaceId,
-                id: docId,
-                documentOutput: []
-            })
-            await setDoc(doc(db, "DocumentOutputs", docId), {
-                docId,
-                output: []
-            })
-            push(`/workspace/${workspaceId}/${docId}`)
-            toast({
-                title: "New Document Created",
-                description: "Your Document has been saved to the workspace."
-            });
-        } catch (error) {
-            toast({
-                title: "Error Creating document",
-                description: "Your Workspace has been saved to the database."
-
-            });
-        } finally {
-            setPending(false)
-        }
-
-    }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!workspaceId) return;
-
-            try {
-                let workspaceData = (await getDoc(doc(db, "workspace", workspaceId))).data()
-                const querySnapshot = await getDocs(query(
-                    collection(db, "Documents"),
-                    where("workspaceId", "==", workspaceData.id)
-                ));
-                const documents = querySnapshot.docs.map(doc => doc.data());
-                if (documentId) {
-                    let documentData = (await getDoc(doc(db, "Documents", documentId))).data()
-                    setData({
-                        workspaceName: workspaceData.title || '',
-                        emoji: documentData.emoji || '',
-                        workspaceMembers: '1 member',
-                        documents: documents || [],
-                        name: documentData.title || '',
-                        coverImg: documentData.coverImg
-                    })
-                }
-                else if (workspaceData.title != '') {
-                    setData({
-                        workspaceName: workspaceData.title || '',
-                        emoji: workspaceData.emoji || '',
-                        workspaceMembers: '1 member',
-                        documents: documents || [],
-                        name: workspaceData.title || '',
-                        coverImg: workspaceData.coverImg
-                    })
-
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-
-        fetchData();
-    }, [workspaceId, documentId]);
-
+const ContentWrapper = ({ children }) => {
+    const { data, setData, collapse, setCollapse, loading, createDocument, pending } = useWorkspace();
+    let { workspaceId, documentId } = useParams();
+    let { push } = useRouter();
 
     return (
+
         <div className="flex h-screen">
             {loading ? (
                 <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
@@ -170,29 +71,13 @@ const Layout = ({ children }) => {
 
                                     push(`/workspace/${workspaceId}/${e.id}`)
                                 }
-                                } key={e.id} className={`flex rounded-lg border-none group outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className={`h-6 w-0.5 bg-blue-600 mr-3 ${documentId === e.id ? 'visible': 'invisible'}`} />
-                                        {e.emoji || <Smile />}
-                                        <h4>{e.title || "Untitled"}</h4>
-                                    </div>
-                                    <div className={`h-8 w-8 rounded-full ${documentId === e.id ? 'bg-black text-white' : "group-hover:bg-[rgba(250,250,250,1)] border border-gray-300 text-black"} text-xs mr-2 cursor-pointer font-medium flex justify-center items-center`}>
-                                        {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
-                                    </div>
-                                </button>
-                            ))}
-                            {data.documents.map(e => (
-                                <button onClick={() => {
-
-                                    push(`/workspace/${workspaceId}/${e.id}`)
-                                }
                                 } key={e.id} className={`flex rounded-lg border-none outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
                                     <div className="flex items-center gap-1.5">
                                         <div className="h-6 w-0.5 bg-blue-600 mr-3" />
                                         {e.emoji || <Smile />}
                                         <h4>{e.title || "Untitled"}</h4>
                                     </div>
-                                    <div className="h-8 w-8 rounded-full bg-black text-white text-xs mr-2 cursor-pointer font-medium flex justify-center items-center">
+                                    <div className={`h-8 w-8 rounded-full ${documentId === e.id ? 'bg-black text-white' : "group-hover:bg-[rgba(250,250,250,1)] border border-gray-300 text-black"} text-xs mr-2 cursor-pointer font-medium flex justify-center items-center`}>
                                         {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
                                     </div>
                                 </button>
@@ -270,6 +155,17 @@ const Layout = ({ children }) => {
                 </div>
             </div>
         </div >
+    );
+
+};
+
+const Layout = ({ children }) => {
+    return (
+        <WorkspaceProvider>
+            <ContentWrapper>
+                {children}
+            </ContentWrapper>
+        </WorkspaceProvider>
     );
 };
 
