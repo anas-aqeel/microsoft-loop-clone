@@ -16,7 +16,7 @@ import { uid } from 'uid'
 
 const CreateWorkSpace = () => {
     let { user } = useUser()
-    let { orgId } = useAuth()
+    let { orgId, userId } = useAuth()
     let { toast } = useToast()
     let { replace } = useRouter()
     let [title, setTitle] = useState('')
@@ -34,7 +34,7 @@ const CreateWorkSpace = () => {
                 coverImg,
                 emoji,
                 id: workspaceId,
-                orgId: orgId ? orgId : user.primaryEmailAddressId,
+                orgId: orgId ? orgId : userId,
                 createdBy: user?.primaryEmailAddress?.emailAddress
             });
             let docId = uid()

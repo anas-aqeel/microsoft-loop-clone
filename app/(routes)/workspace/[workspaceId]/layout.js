@@ -87,12 +87,12 @@ const Layout = ({ children }) => {
     return (
         <div className="flex">
             {loading ? (
-                <div className={`w-0 md:${collapse ? "w-0" : "w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
+                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
                     <Loader2 className="animate-spin" size={30} />
                     <h3 className="animate-pulse">Fetching Data</h3>
                 </div>
             ) : (
-                <div className={`w-0 md:${collapse ? "w-0" : "w-[20%]"} transition-all duration-200 overflow-hidden flex flex-col py-5`}>
+                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} transition-all duration-200 overflow-hidden flex flex-col py-5`}>
                     <div className="px-2">
                         <div className="flex w-full justify-between items-center px-2">
                             <div className="flex items-center gap-1.5 text-2xl font-bold">
