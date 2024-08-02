@@ -2,11 +2,11 @@ import { Button } from '@/components/ui/button'
 import EmojiPicker from 'emoji-picker-react'
 import React, { useState } from 'react'
 
-const EmojiPickerConponent = ({ children, setEmoji }) => {
+const EmojiPickerConponent = ({ children, setEmoji, parentAttributes = { variant: "outline" } }) => {
     let [openPicker, setOpenPicker] = useState(false)
     return (
         <div>
-            <Button variant="outline" onClick={() => { setOpenPicker(!openPicker) }}>
+            <Button {...parentAttributes} onClick={() => { setOpenPicker(!openPicker) }}>
                 {children}
             </Button>
             {openPicker &&

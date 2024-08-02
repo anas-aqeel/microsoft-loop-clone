@@ -1,11 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { db } from "@/config/FirebaseConfig";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-import { ArrowLeftFromLine, ArrowRightFromLine, History, Loader2, Pencil, Plus, Recycle, Smile, Trash2 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { ArrowLeftFromLine, ArrowRightFromLine, History, ImagePlus, Loader2, Pencil, Plus, Smile, Trash2, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Header from "../../_components/Header";
+import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
+import CoverPicker from "../../_components/CoverPicker";
+import { uid } from "uid";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     return (
@@ -15,63 +20,97 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     );
 };
 
-const Layout = ({ children }) => {
-    const [workspaceId, setWorkspaceId] = useState(null);
-    const [documentId, setDocumentId] = useState(null);
+const Layout = ({ children, params: { workspaceId, documentId } }) => {
     const [collapse, setCollapse] = useState(false);
     const [loading, setLoading] = useState(true);
+    let [pending, setPending] = useState(false);
+    let [validate, setValidate] = useState(false)
+    let invalidate = () => setValidate(!validate);
 
+    
+
+    let { user } = useUser()
+    let { push } = useRouter()
     const [data, setData] = useState({
         workspaceName: "",
-        workspaceEmoji: "",
-        documentEmoji: "",
-        documentName: "",
+        emoji: "",
         createdBy: "",
         workspaceMembers: "",
+        emoji: "",
         documents: [],
-        documentOutput: "",
+        name: '',
+        coverImg: "/images/workspacecover.webp"
     });
 
-    const pathname = usePathname();
 
-    useEffect(() => {
-        if (pathname) {
-            const pathParts = pathname.split("/");
-            if (pathParts.length >= 4) {
-                setWorkspaceId(pathParts[2]);
-                setDocumentId(pathParts[3]);
-            }
+    let createDocument = async () => {
+        setPending(true)
+        let docId = uid()
+        try {
+            await setDoc(doc(db, "Documents", docId), {
+                title: "Untitled",
+                coverImg: '/images/workspacecover.webp',
+                emoji: null,
+                createdBy: user?.primaryEmailAddress?.emailAddress,
+                workspaceId,
+                id: docId,
+                documentOutput: []
+            })
+            await setDoc(doc(db, "DocumentOutputs", docId), {
+                docId,
+                output: []
+            })
+            push(`/workspace/${workspaceId}/${docId}`)
+            toast({
+                title: "New Document Created",
+                description: "Your Document has been saved to the workspace."
+            });
+        } catch (error) {
+            toast({
+                title: "Error Creating document",
+                description: "Your Workspace has been saved to the database."
+
+            });
+        } finally {
+            invalidate()
+            setPending(false)
         }
-    }, [pathname]);
+
+    }
 
     useEffect(() => {
+        console.log(documentId)
         const fetchData = async () => {
-            if (!workspaceId || !documentId) return;
+            if (!workspaceId) return;
 
             try {
                 let workspaceData = (await getDoc(doc(db, "workspace", workspaceId))).data()
-                let documentData = (await getDoc(doc(db, "Documents", documentId))).data()
                 const querySnapshot = await getDocs(query(
                     collection(db, "Documents"),
                     where("workspaceId", "==", workspaceData.id)
                 ));
                 const documents = querySnapshot.docs.map(doc => doc.data());
-                let documenOutput = (await getDoc(doc(db, "DocumentOutputs", documentId))).data()
-                if (documentData.workspaceId = workspaceData.id) {
+                if (documentId) {
+                    let documentData = (await getDoc(doc(db, "Documents", documentId))).data()
+                    setData({
+                        workspaceName: workspaceData.title || '',
+                        emoji: documentData.emoji || '',
+                        workspaceMembers: '1 member',
+                        documents: documents || [],
+                        name: documentData.title || '',
+                        coverImg: documentData.coverImg
+                    })
+                }
+                else if (workspaceData.title != '') {
+                    setData({
+                        workspaceName: workspaceData.title || '',
+                        emoji: workspaceData.emoji || '',
+                        workspaceMembers: '1 member',
+                        documents: documents || [],
+                        name: workspaceData.title || '',
+                        coverImg: workspaceData.coverImg
+                    })
 
-                    if (workspaceData.title != '' && documentData.title != '') {
-                        setData({
-                            workspaceName: workspaceData.title || '',
-                            workspaceEmoji: workspaceData.emoji || '',
-                            documentEmoji: documentData.emoji || '',
-                            documentName: documentData.title || '',
-                            createdBy: documentData.createdBy.split('')[0] || '',
-                            workspaceMembers: '1 member',
-                            documents: documents || [],
-                            documentOutput: documenOutput.output
-                        })
-
-                    }
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -82,7 +121,7 @@ const Layout = ({ children }) => {
 
 
         fetchData();
-    }, [workspaceId, documentId]);
+    }, [workspaceId, validate]);
 
     return (
         <div className="flex">
@@ -121,23 +160,17 @@ const Layout = ({ children }) => {
                                 <h6 className="font-medium text-lg text-black">{data.workspaceName || "Untitled"}</h6>
                                 <p className="text-xs">{data.workspaceMembers || "1 Member"}</p>
                             </div>
-                            <Button className="rounded-full p-0 text-white h-8 w-8">
+                            <Button onClick={createDocument} disabled={pending} className="rounded-full p-0 text-white h-8 w-8">
                                 <Plus size={"16"} />
                             </Button>
                         </div>
                         <div className="flex flex-col w-full gap-1 px-4 mt-5">
-                            <div className="flex rounded-lg bg-white py-2 text-sm text-gray-800 px-1 justify-between w-full items-center">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="h-6 w-0.5 bg-blue-600 mr-3" />
-                                    {data.documentEmoji || <Smile />}
-                                    <h4>{data.documentName || "Untitled"}</h4>
-                                </div>
-                                <div className="h-8 w-8 rounded-full bg-black text-white text-xs mr-2 cursor-pointer font-medium flex justify-center items-center">
-                                    {data.createdBy.toUpperCase()}
-                                </div>
-                            </div>
+
                             {data.documents.map(e => (
-                                <div key={e.id} className={`flex rounded-lg py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
+                                <button onClick={() => {
+                                    push(`/workspace/${workspaceId}/${e.id}`)
+                                }
+                                } key={e.id} className={`flex rounded-lg border-none outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
                                     <div className="flex items-center gap-1.5">
                                         <div className="h-6 w-0.5 bg-blue-600 mr-3" />
                                         {e.emoji || <Smile />}
@@ -146,7 +179,7 @@ const Layout = ({ children }) => {
                                     <div className="h-8 w-8 rounded-full bg-black text-white text-xs mr-2 cursor-pointer font-medium flex justify-center items-center">
                                         {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -166,12 +199,61 @@ const Layout = ({ children }) => {
                     <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
                 </div>
                 <Header logo={false} />
-                <div className="p-5">
+                <div className="">
+                    <div className="relative">
+                        <div className='group relative  cursor-pointer'>
+                            <img
+                                src={data.coverImg}
+                                width={576}
+                                height={208}
+                                className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
+                                alt=""
+                            />
+                            <label htmlFor="cover" className='absolute inset-0'></label>
+                            <CoverPicker onUpdate={(e) => { setData({ ...data, coverImg: e }) }} currentImg={data.coverImg}>
 
-                    {children}
+                                <Button
+                                    id="cover"
+                                    className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
+                                >
+                                    <ImagePlus className='text-white bg-gray-800' />
+                                    Update Cover
+                                </Button>
+                            </CoverPicker>
+
+                        </div>
+
+                        <div className={`absolute bottom-[-25px] left-0 right-0 w-full max-w-6xl mx-auto px-4 ${!Boolean(data.emoji) ? 'invisible' : 'visible'}`}>
+                            <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
+
+                                {data.emoji}
+                                <Button className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-700 bg rounded-full text-sm bg-white">
+                                    <X size={22} />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="max-w-6xl mx-auto px-4 pt-20 relative">
+                        {!Boolean(data.emoji) &&
+                            <EmojiPickerConponent setEmoji={(e) => { setData({ ...data, emoji: e }) }} parentAttributes={{
+                                className: `flex gap-2 absolute top-7 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black`,
+                                variant: 'filled'
+                            }}>
+
+                                <Smile size={16} />
+                                Add Emoji
+                            </EmojiPickerConponent>
+                        }
+                        <h2 className="text-4xl font-bold border-none outline-none" contentEditable >
+                            {data.name}
+                        </h2>
+                        <div className="mt-12">
+                            {children}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
