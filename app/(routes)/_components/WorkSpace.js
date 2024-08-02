@@ -74,7 +74,7 @@ const WorkSpace = () => {
                 onClick={()=>{
                   push(`/workspace/${workspace.id}`)
                 }}
-                key={workspace.id} className="group border-b w-full flex justify-between items-center py-2 cursor-pointer border-none outline-none">
+                key={workspace.id} className="group  w-full flex justify-between items-center py-2 cursor-pointer hover:bg-slate-200 px-2 rounded-lg outline-none border-b">
                   <div className="py-2 flex items-center gap-4">
                     {workspace.emoji ? workspace.emoji : <img src='/icons/document.svg' />}
                     {workspace.title}

@@ -10,7 +10,7 @@ import CoverPicker from "../../_components/CoverPicker";
 import { uid } from "uid";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     return (
@@ -20,17 +20,17 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
     );
 };
 
-const Layout = ({ children, params: { workspaceId, documentId } }) => {
+const Layout = ({ children }) => {
+    let { workspaceId, documentId } = useParams()
     const [collapse, setCollapse] = useState(false);
     const [loading, setLoading] = useState(true);
     let [pending, setPending] = useState(false);
-    let [validate, setValidate] = useState(false)
-    let invalidate = () => setValidate(!validate);
 
-    
+
 
     let { user } = useUser()
     let { push } = useRouter()
+
     const [data, setData] = useState({
         workspaceName: "",
         emoji: "",
@@ -72,14 +72,12 @@ const Layout = ({ children, params: { workspaceId, documentId } }) => {
 
             });
         } finally {
-            invalidate()
             setPending(false)
         }
 
     }
 
     useEffect(() => {
-        console.log(documentId)
         const fetchData = async () => {
             if (!workspaceId) return;
 
@@ -121,17 +119,18 @@ const Layout = ({ children, params: { workspaceId, documentId } }) => {
 
 
         fetchData();
-    }, [workspaceId, validate]);
+    }, [workspaceId, documentId]);
+
 
     return (
-        <div className="flex">
+        <div className="flex h-screen">
             {loading ? (
                 <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
                     <Loader2 className="animate-spin" size={30} />
                     <h3 className="animate-pulse">Fetching Data</h3>
                 </div>
             ) : (
-                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} transition-all duration-200 overflow-hidden flex flex-col py-5`}>
+                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen transition-all duration-200 overflow-hidden flex flex-col py-5`}>
                     <div className="px-2">
                         <div className="flex w-full justify-between items-center px-2">
                             <div className="flex items-center gap-1.5 text-2xl font-bold">
@@ -154,8 +153,8 @@ const Layout = ({ children, params: { workspaceId, documentId } }) => {
                         </div>
                     </div>
                     <div className="w-full h-[1px] bg-gray-300 mt-6"></div>
-                    <div className="flex-1">
-                        <div className="cursor-pointer flex justify-between items-start w-full py-3 px-4 text-[#969696] rounded-md mt-5">
+                    <div className="flex-1 w-full flex-col flex overflow-y-scroll">
+                        <div className="cursor-pointer sticky top-0 left-0 bg-inherit z-30 backdrop-blur-3xl flex justify-between items-start w-full py-3 px-4 text-[#969696] rounded-md mt-5">
                             <div className="flex flex-col gap-1">
                                 <h6 className="font-medium text-lg text-black">{data.workspaceName || "Untitled"}</h6>
                                 <p className="text-xs">{data.workspaceMembers || "1 Member"}</p>
@@ -164,10 +163,27 @@ const Layout = ({ children, params: { workspaceId, documentId } }) => {
                                 <Plus size={"16"} />
                             </Button>
                         </div>
-                        <div className="flex flex-col w-full gap-1 px-4 mt-5">
+                        <div className="flex flex-1 flex-col w-full gap-1 px-4 my-2.5 ">
 
                             {data.documents.map(e => (
                                 <button onClick={() => {
+
+                                    push(`/workspace/${workspaceId}/${e.id}`)
+                                }
+                                } key={e.id} className={`flex rounded-lg border-none group outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className={`h-6 w-0.5 bg-blue-600 mr-3 ${documentId === e.id ? 'visible': 'invisible'}`} />
+                                        {e.emoji || <Smile />}
+                                        <h4>{e.title || "Untitled"}</h4>
+                                    </div>
+                                    <div className={`h-8 w-8 rounded-full ${documentId === e.id ? 'bg-black text-white' : "group-hover:bg-[rgba(250,250,250,1)] border border-gray-300 text-black"} text-xs mr-2 cursor-pointer font-medium flex justify-center items-center`}>
+                                        {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
+                                    </div>
+                                </button>
+                            ))}
+                            {data.documents.map(e => (
+                                <button onClick={() => {
+
                                     push(`/workspace/${workspaceId}/${e.id}`)
                                 }
                                 } key={e.id} className={`flex rounded-lg border-none outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
@@ -258,3 +274,5 @@ const Layout = ({ children, params: { workspaceId, documentId } }) => {
 };
 
 export default Layout;
+
+
