@@ -14,7 +14,8 @@ const EmojiPickerConponent = ({ children, setEmoji, parentAttributes = { variant
                     <EmojiPicker onEmojiClick={(e) => {
                         setEmoji(e.emoji)
                         setOpenPicker(false)
-                    }} />
+
+                    }} emojiStyle='facebook' />
                 </div>
             }
         </div>

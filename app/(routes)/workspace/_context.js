@@ -6,7 +6,6 @@ import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } fro
 import { uid } from "uid";
 import { db } from "@/config/FirebaseConfig";
 import { toast } from "@/components/ui/use-toast";
-import { title } from "process";
 
 const WorkspaceContext = createContext();
 
@@ -115,14 +114,14 @@ const WorkspaceProvider = ({ children }) => {
     let updateData = async (collectionName, id, key, value) => {
         try {
             await updateDoc(doc(db, collectionName, id), {
-                key: value
+                [key]: value
             })
             toast({
                 title: `Document ${key} updated!`,
                 description: "Your Document has been updated in the database."
             })
         } catch (e) {
-            console.log({collectionName, id, key, value,e})
+            console.log({ collectionName, id, key, value, e })
             toast({
                 title: `Error updating ${key}`,
                 description: `Your ${key} has been updated in the database.`
@@ -130,21 +129,29 @@ const WorkspaceProvider = ({ children }) => {
         }
     }
     let setEmoji = async (id, emoji) => {
-        setData({
-            ...data,
-            emoji
-        })
         if (documentId) {
+            let document = data.documents.find((e) => e.id == id)
+            setData({
+                ...data,
+                emoji,
+                documents: [{ ...document, emoji }, ...data.documents.filter((e) => e.id != id)]
+            })
             await updateData("Documents", id, "emoji", emoji)
         } else {
+            setData({
+                ...data,
+                emoji
+            })
             await updateData("workspace", id, "emoji", emoji)
         }
     }
     let setTitle = async (id, title) => {
         if (documentId) {
+            let document = data.documents.find((e) => e.id == id)
             setData({
                 ...data,
-                name: title
+                name: title,
+                documents: [{ ...document, title }, ...data.documents.filter((e) => e.id != id)]
             })
             await updateData("Documents", id, "title", title)
 
@@ -173,7 +180,7 @@ const WorkspaceProvider = ({ children }) => {
 
     return (
         <WorkspaceContext.Provider value={{
-            data, setData, collapse, setCollapse, loading, pending, createDocument, update: {
+            data, collapse, setCollapse, loading, pending, createDocument, update: {
                 setEmoji,
                 setTitle,
                 setCoverImg

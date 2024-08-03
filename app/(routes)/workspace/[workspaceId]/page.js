@@ -8,7 +8,7 @@ import { ExternalLink, FilePenLine, Loader2, Trash2, UserPlus } from "lucide-rea
 const page = () => {
   let { push } = useRouter()
   let { workspaceId } = useParams()
-  let { data, setData, loading } = useWorkspace()
+  let { data, loading } = useWorkspace()
 
 
   const menuData = {
@@ -21,6 +21,7 @@ const page = () => {
       { label: "Delete", icon: Trash2, onClick: () => console.log("Delete clicked") },
     ],
   };
+  
   return (
     loading ? (<div className="w-full mt-10 flex justify-center items-center">
       <Loader2 size={42} className="animate-spin" />

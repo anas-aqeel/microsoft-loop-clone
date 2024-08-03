@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Loader2, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import Header from "../../_components/Header";
 import CoverPicker from "../../_components/CoverPicker";
 import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
@@ -20,7 +20,7 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
 };
 
 const ContentWrapper = ({ children }) => {
-    const { data, setData, collapse, setCollapse, loading, createDocument, pending, update } = useWorkspace();
+    const { data, collapse, setCollapse, loading, createDocument, pending, update } = useWorkspace();
     let { workspaceId, documentId } = useParams();
     let { push } = useRouter();
 
@@ -170,7 +170,7 @@ const ContentWrapper = ({ children }) => {
                             <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
 
                                 {data.emoji}
-                                <Button className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-700 bg rounded-full text-sm bg-white">
+                                <Button onClick={() => { update.setEmoji(documentId ? documentId : workspaceId, null) }} className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-400 bg rounded-full text-sm bg-white">
                                     <X size={22} />
                                 </Button>
                             </div>
@@ -179,7 +179,7 @@ const ContentWrapper = ({ children }) => {
                     <div className="sticky max-w-6xl mx-auto px-4 pt-4 ">
 
 
-                        <EmojiPickerConponent setEmoji={(e) => {  update.setEmoji(documentId ? documentId : workspaceId,e) }} parentAttributes={{
+                        <EmojiPickerConponent setEmoji={(e) => { update.setEmoji(documentId ? documentId : workspaceId, e) }} parentAttributes={{
                             className: `flex gap-2 mb-8 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black  ${!Boolean(data.emoji) ? 'visible' : 'invisible'}`,
                             variant: 'filled'
                         }}>
@@ -189,7 +189,7 @@ const ContentWrapper = ({ children }) => {
                         </EmojiPickerConponent>
 
                         <div className="flex justify-between items-center">
-                            <input className="text-4xl font-bold" value={data.name} onBlur={(e) => update.setTitle(documentId ? documentId : workspaceId, e.target.value)} />
+                            <input className="text-4xl font-bold border-none outline-none" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId ? documentId : workspaceId, e.target.value)} />
 
                             {!documentId && <Button onClick={() => createDocument()} className="rounded-full text-white p-1.5">
                                 <Plus />
