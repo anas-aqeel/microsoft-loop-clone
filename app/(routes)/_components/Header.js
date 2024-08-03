@@ -5,7 +5,7 @@ import React from 'react'
 const Header = ({ logo = true }) => {
   let { orgId } = useAuth()
   return (
-    <div className="  ">
+    <div className="sticky bg-white top-0 z-50 right-0 left-0">
       <div
         className="flex justify-between py-2.5 px-3  items-center
        mx-auto"

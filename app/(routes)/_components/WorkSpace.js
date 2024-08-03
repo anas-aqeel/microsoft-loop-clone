@@ -13,14 +13,24 @@ const WorkSpace = () => {
   let [workSpaceList, setWorkSpaceList] = useState([]);
   let { orgId, userId } = useAuth();
   let id = orgId ? orgId : userId;
+  let [loading, setLoading] = useState(true)
 
   let fetchData = async () => {
-    const querySnapshot = await getDocs(query(collection(db, "workspace"), where("orgId", "==", id)));
-    const workspaces = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    setWorkSpaceList(workspaces);
+    try {
+      const querySnapshot = await getDocs(query(collection(db, "workspace"), where("orgId", "==", id)));
+      const workspaces = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setWorkSpaceList(workspaces);
+    } catch (error) {
+      console.log(error.message)
+    } finally {
+      setLoading(false)
+
+    }
+
   }
 
   useEffect(() => {
+    !loading && setLoading(true)
     fetchData();
   }, [id]);
 
@@ -55,7 +65,12 @@ const WorkSpace = () => {
           </button>
         </div>
       </div>
-      {workSpaceList.length == 0 ? (
+      {loading ? (
+        <div className="md:mt-24 flex justify-center items-center w-full flex-col text-center gap-5">
+          <img src="/images/loader.png" alt="No workspace" className='w-32 h-auto animate-spin' />
+          <h3 className="mb-4 text-xl animate-pulse">Loading workspaces</h3>
+        </div>
+      ) : workSpaceList.length == 0 ? (
         <div className="md:mt-8 flex justify-center items-center w-full flex-col text-center">
           <img src="/images/workspace.webp" alt="No workspace" />
           <h3 className="font-medium mb-4 text-2xl">Create a new workspace</h3>

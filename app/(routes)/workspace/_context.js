@@ -29,35 +29,43 @@ const WorkspaceProvider = ({ children }) => {
     });
 
     const createDocument = async () => {
-        setPending(true);
-        let docId = uid();
-        try {
-            await setDoc(doc(db, "Documents", docId), {
-                title: "Untitled",
-                coverImg: '/images/workspacecover.webp',
-                emoji: null,
-                createdBy: user?.primaryEmailAddress?.emailAddress,
-                workspaceId,
-                id: docId,
-                documentOutput: []
-            });
-            await setDoc(doc(db, "DocumentOutputs", docId), {
-                docId,
-                output: []
-            });
+        if (data.documents.length < 5) {
+            setPending(true);
+            let docId = uid();
+            try {
+                await setDoc(doc(db, "Documents", docId), {
+                    title: "Untitled",
+                    coverImg: '/images/workspacecover.webp',
+                    emoji: null,
+                    createdBy: user?.primaryEmailAddress?.emailAddress,
+                    workspaceId,
+                    id: docId,
+                    documentOutput: []
+                });
+                await setDoc(doc(db, "DocumentOutputs", docId), {
+                    docId,
+                    output: []
+                });
+                toast({
+                    title: "New Document Created",
+                    description: "Your Document has been saved to the workspace."
+                });
+                push(`/workspace/${workspaceId}/${docId}`);
+            } catch (error) {
+                toast({
+                    title: "Error Creating document",
+                    description: "Your Workspace has been saved to the database."
+                });
+            } finally {
+                setPending(false);
+            }
+        } else {
             toast({
-                title: "New Document Created",
-                description: "Your Document has been saved to the workspace."
-            });
-            push(`/workspace/${workspaceId}/${docId}`);
-        } catch (error) {
-            toast({
-                title: "Error Creating document",
-                description: "Your Workspace has been saved to the database."
-            });
-        } finally {
-            setPending(false);
+                title: "Documents Limit Reached",
+                description: "You cannot create more than 5 documents in a single workspace"
+            })
         }
+
     };
 
     useEffect(() => {

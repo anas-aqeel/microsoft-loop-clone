@@ -26,7 +26,9 @@ const page = () => {
       <Loader2 size={42} className="animate-spin" />
     </div>) :
       (
-        <DataTable options={menuData} dataList={data.documents} onClickFunc={(ducumentid) => { push(`/workspace/${workspaceId}/${ducumentid}`) }} />
+        <>
+          <DataTable options={menuData} dataList={data.documents} onClickFunc={(ducumentid) => { push(`/workspace/${workspaceId}/${ducumentid}`) }} />
+        </>
 
       )
   )
