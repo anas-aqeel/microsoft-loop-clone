@@ -1,11 +1,12 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Loader2, Trash2, X, ImagePlus } from "lucide-react";
+import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Loader2, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy } from "lucide-react";
 import Header from "../../_components/Header";
 import CoverPicker from "../../_components/CoverPicker";
 import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
 import { useWorkspace, WorkspaceProvider } from "../_context";
 import { useParams, useRouter } from "next/navigation";
+import { CustomDropdownMenu } from "../../_components/OptionsMenu";
 
 
 
@@ -22,15 +23,42 @@ const ContentWrapper = ({ children }) => {
     let { workspaceId, documentId } = useParams();
     let { push } = useRouter();
 
+    const menuData = {
+        group1: [
+            { label: "Open", icon: ExternalLink, onClick: () => console.log("Open clicked") },
+            { label: "Share page link", icon: Share2, onClick: () => console.log("Share page link clicked") },
+            { label: "Share Loop component", icon: Forward, onClick: () => console.log("Share Loop component clicked") },
+            { label: "Rename and style", icon: FilePenLine, onClick: () => console.log("Rename and style clicked") },
+        ],
+        group2: [
+            { label: "Recap", icon: SquareChartGantt, onClick: () => console.log("Recap clicked") },
+        ],
+        group3: [
+            { label: "Duplicate", icon: Copy, onClick: () => console.log("Duplicate clicked") },
+        ],
+        group4: [
+            { label: "Delete", icon: Trash2, onClick: () => console.log("Delete clicked") },
+        ],
+    }
+
+
+
     return (
 
-        <div className="flex h-screen">
-            {loading ? (
+
+        loading ? (
+            <div className="flex h-screen">
                 <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
-                    <Loader2 className="animate-spin" size={30} />
+                    <img src="/images/loader.png" className="animate-spin h-8 w-auto" />
                     <h3 className="animate-pulse">Fetching Data</h3>
                 </div>
-            ) : (
+                <div className="flex w-full flex-1 bg-white h-screen shadow-xl justify-center items-center flex-col text-center">
+                    <img src="/images/loader.png" className="animate-spin h-8 w-auto" />
+                    <p className="animate-pulse text-lg mt-2">Loading</p>
+                </div>
+            </div>
+        ) : (
+            <div className="flex h-screen">
                 <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen transition-all duration-200 overflow-hidden flex flex-col py-5`}>
                     <div className="px-2">
                         <div className="flex w-full justify-between items-center px-2">
@@ -77,8 +105,16 @@ const ContentWrapper = ({ children }) => {
                                         {e.emoji || <Smile />}
                                         <h4>{e.title || "Untitled"}</h4>
                                     </div>
-                                    <div className={`h-8 w-8 rounded-full ${documentId === e.id ? 'bg-black text-white' : "group-hover:bg-[rgba(250,250,250,1)] border border-gray-300 text-black"} text-xs mr-2 cursor-pointer font-medium flex justify-center items-center`}>
-                                        {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
+                                    <div className="flex gap-2 items-center">
+                                        {documentId === e.id && (
+                                            <CustomDropdownMenu menuData={menuData} parentClass={'h-9 w-9 rounded-full flex justify-center items-center hover:border-black border border-transparent transition-all p-0'}>
+                                                <Ellipsis size={20} />
+                                            </CustomDropdownMenu>)
+                                        }
+                                        <div className={`h-8 w-8 rounded-full ${documentId === e.id ? 'bg-black text-white' : "group-hover:bg-[rgba(250,250,250,1)] border border-gray-300 text-black"} text-xs mr-2 cursor-pointer font-medium flex justify-center items-center`}>
+                                            {e.createdBy.split("").length > 0 ? e.createdBy.split("")[0].toUpperCase() : "A"}
+                                        </div>
+
                                     </div>
                                 </button>
                             ))}
@@ -94,67 +130,74 @@ const ContentWrapper = ({ children }) => {
                         </div>
                     </div>
                 </div>
-            )}
-            <div className="flex-1 bg-white h-screen shadow-xl relative">
-                <div className={`absolute top-2 left-2 ${collapse ? "visible" : "invisible"}`}>
-                    <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
-                </div>
-                <Header logo={false} />
-                <div className="">
-                    <div className="relative">
-                        <div className='group relative  cursor-pointer'>
-                            <img
-                                src={data.coverImg}
-                                width={576}
-                                height={208}
-                                className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
-                                alt=""
-                            />
-                            <label htmlFor="cover" className='absolute inset-0'></label>
-                            <CoverPicker onUpdate={(e) => { setData({ ...data, coverImg: e }) }} currentImg={data.coverImg}>
 
-                                <Button
-                                    id="cover"
-                                    className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
-                                >
-                                    <ImagePlus className='text-white bg-gray-800' />
-                                    Update Cover
-                                </Button>
-                            </CoverPicker>
+                <div className="flex-1 bg-white h-screen shadow-xl relative">
+                    <div className={`absolute top-2 left-2 ${collapse ? "visible" : "invisible"}`}>
+                        <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
+                    </div>
+                    <Header logo={false} />
+                    <div className="">
+                        <div className="relative">
+                            <div className='group relative  cursor-pointer'>
+                                <img
+                                    src={data.coverImg}
+                                    width={576}
+                                    height={208}
+                                    className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
+                                    alt=""
+                                />
+                                <label htmlFor="cover" className='absolute inset-0'></label>
+                                <CoverPicker onUpdate={(e) => { setData({ ...data, coverImg: e }) }} currentImg={data.coverImg}>
 
+                                    <Button
+                                        id="cover"
+                                        className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
+                                    >
+                                        <ImagePlus className='text-white bg-gray-800' />
+                                        Update Cover
+                                    </Button>
+                                </CoverPicker>
+
+                            </div>
+
+                            <div className={`absolute bottom-[-25px] left-0 right-0 w-full max-w-6xl mx-auto px-4 ${!Boolean(data.emoji) ? 'invisible' : 'visible'}`}>
+                                <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
+
+                                    {data.emoji}
+                                    <Button className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-700 bg rounded-full text-sm bg-white">
+                                        <X size={22} />
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
+                        <div className="max-w-6xl mx-auto px-4 pt-20 relative">
+                            {!Boolean(data.emoji) &&
+                                <EmojiPickerConponent setEmoji={(e) => { setData({ ...data, emoji: e }) }} parentAttributes={{
+                                    className: `flex gap-2 absolute top-7 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black`,
+                                    variant: 'filled'
+                                }}>
 
-                        <div className={`absolute bottom-[-25px] left-0 right-0 w-full max-w-6xl mx-auto px-4 ${!Boolean(data.emoji) ? 'invisible' : 'visible'}`}>
-                            <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
-
-                                {data.emoji}
-                                <Button className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-700 bg rounded-full text-sm bg-white">
-                                    <X size={22} />
-                                </Button>
+                                    <Smile size={16} />
+                                    Add Emoji
+                                </EmojiPickerConponent>
+                            }
+                            <h2 className="text-4xl font-bold border-none outline-none" contentEditable >
+                                {data.name}
+                            </h2>
+                            <div className="mt-12">
+                                {children}
                             </div>
                         </div>
                     </div>
-                    <div className="max-w-6xl mx-auto px-4 pt-20 relative">
-                        {!Boolean(data.emoji) &&
-                            <EmojiPickerConponent setEmoji={(e) => { setData({ ...data, emoji: e }) }} parentAttributes={{
-                                className: `flex gap-2 absolute top-7 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black`,
-                                variant: 'filled'
-                            }}>
-
-                                <Smile size={16} />
-                                Add Emoji
-                            </EmojiPickerConponent>
-                        }
-                        <h2 className="text-4xl font-bold border-none outline-none" contentEditable >
-                            {data.name}
-                        </h2>
-                        <div className="mt-12">
-                            {children}
-                        </div>
-                    </div>
                 </div>
+
+
+
             </div>
-        </div >
+        )
+
+
+
     );
 
 };

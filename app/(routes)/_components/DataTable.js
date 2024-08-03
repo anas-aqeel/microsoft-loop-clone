@@ -1,8 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { MoreHorizontalIcon, Star } from 'lucide-react'
 import React from 'react'
+import { CustomDropdownMenu } from './OptionsMenu'
 
-const DataTable = ({ dataList, onClickFunc }) => {
+const DataTable = ({ dataList, onClickFunc, options }) => {
     return (
         <div className='mt-12'>
             <div className="w-full">
@@ -21,14 +22,18 @@ const DataTable = ({ dataList, onClickFunc }) => {
                                 onClickFunc(`${dataItem.id}`)
                             }}
                             key={dataItem.id} className="group  w-full flex justify-between items-center py-2 cursor-pointer hover:bg-slate-200 px-2 rounded-lg outline-none border-b">
-                            <div className="py-2 flex items-center gap-4">
-                                {dataItem.emoji ? dataItem.emoji : <img src='/icons/document.svg' />}
+                            <div className="py-1.5 flex items-center gap-4">
+                                <div className='bg-purple-50 rounded-md py-2 px-2'>
+
+                                    {dataItem.emoji ? dataItem.emoji : <img src='/icons/document.svg' />}
+                                </div>
                                 {dataItem.title}
                             </div>
                             <div className="flex items-center gap-3 text-sm text-purple-500">
-                                <Button variant="outline" className="group-hover:visible invisible h-8 w-8 rounded-full p-0 bg-transparent border border-purple-500">
+                                <CustomDropdownMenu menuData={options} parentClass={'group-hover:visible invisible h-8 w-8 rounded-full p-0 bg-transparent border border-purple-500'}>
+
                                     <MoreHorizontalIcon size={16} className=' ' />
-                                </Button>
+                                </CustomDropdownMenu>
                                 <Star size={18} />
                             </div>
                         </button>
