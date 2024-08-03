@@ -2,10 +2,11 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { uid } from "uid";
 import { db } from "@/config/FirebaseConfig";
 import { toast } from "@/components/ui/use-toast";
+import { title } from "process";
 
 const WorkspaceContext = createContext();
 
@@ -110,8 +111,74 @@ const WorkspaceProvider = ({ children }) => {
         fetchData();
     }, [workspaceId, documentId]);
 
+
+    let updateData = async (collectionName, id, key, value) => {
+        try {
+            await updateDoc(doc(db, collectionName, id), {
+                key: value
+            })
+            toast({
+                title: `Document ${key} updated!`,
+                description: "Your Document has been updated in the database."
+            })
+        } catch (e) {
+            console.log({collectionName, id, key, value,e})
+            toast({
+                title: `Error updating ${key}`,
+                description: `Your ${key} has been updated in the database.`
+            })
+        }
+    }
+    let setEmoji = async (id, emoji) => {
+        setData({
+            ...data,
+            emoji
+        })
+        if (documentId) {
+            await updateData("Documents", id, "emoji", emoji)
+        } else {
+            await updateData("workspace", id, "emoji", emoji)
+        }
+    }
+    let setTitle = async (id, title) => {
+        if (documentId) {
+            setData({
+                ...data,
+                name: title
+            })
+            await updateData("Documents", id, "title", title)
+
+        } else {
+            setData({
+                ...data,
+                name: title,
+                workspaceName: title
+            })
+            await updateData("workspace", id, "title", title)
+        }
+
+    }
+
+    let setCoverImg = async (id, coverImg) => {
+        setData({
+            ...data,
+            coverImg
+        })
+        if (documentId) {
+            updateData("Documents", id, "coverImg", coverImg)
+        } else {
+            updateData("workspace", id, "coverImg", coverImg)
+        }
+    }
+
     return (
-        <WorkspaceContext.Provider value={{ data, setData, collapse, setCollapse, loading, pending, createDocument }}>
+        <WorkspaceContext.Provider value={{
+            data, setData, collapse, setCollapse, loading, pending, createDocument, update: {
+                setEmoji,
+                setTitle,
+                setCoverImg
+            }
+        }}>
             {children}
         </WorkspaceContext.Provider>
     );

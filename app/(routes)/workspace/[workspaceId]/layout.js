@@ -20,7 +20,7 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
 };
 
 const ContentWrapper = ({ children }) => {
-    const { data, setData, collapse, setCollapse, loading, createDocument, pending } = useWorkspace();
+    const { data, setData, collapse, setCollapse, loading, createDocument, pending, update } = useWorkspace();
     let { workspaceId, documentId } = useParams();
     let { push } = useRouter();
 
@@ -149,7 +149,11 @@ const ContentWrapper = ({ children }) => {
                                 alt=""
                             />
                             <label htmlFor="cover" className='absolute inset-0'></label>
-                            <CoverPicker onUpdate={(e) => { setData({ ...data, coverImg: e }) }} currentImg={data.coverImg}>
+                            <CoverPicker onUpdate={(e) => {
+
+                                update.setCoverImg(documentId ? documentId : workspaceId, e)
+                            }}
+                                currentImg={data.coverImg}>
 
                                 <Button
                                     id="cover"
@@ -175,8 +179,8 @@ const ContentWrapper = ({ children }) => {
                     <div className="sticky max-w-6xl mx-auto px-4 pt-4 ">
 
 
-                        <EmojiPickerConponent setEmoji={(e) => { setData({ ...data, emoji: e }) }} parentAttributes={{
-                            className: `flex gap-2 mb-8  bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black  ${!Boolean(data.emoji) ? 'visible' : 'invisible'}`,
+                        <EmojiPickerConponent setEmoji={(e) => {  update.setEmoji(documentId ? documentId : workspaceId,e) }} parentAttributes={{
+                            className: `flex gap-2 mb-8 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black  ${!Boolean(data.emoji) ? 'visible' : 'invisible'}`,
                             variant: 'filled'
                         }}>
 
@@ -185,12 +189,14 @@ const ContentWrapper = ({ children }) => {
                         </EmojiPickerConponent>
 
                         <div className="flex justify-between items-center">
-                            <h3 className="text-3xl font-medium" contentEditable>{data.name}</h3>
-                            <Button onClick={() => createDocument()} className="rounded-full text-white p-1.5">
+                            <input className="text-4xl font-bold" value={data.name} onBlur={(e) => update.setTitle(documentId ? documentId : workspaceId, e.target.value)} />
+
+                            {!documentId && <Button onClick={() => createDocument()} className="rounded-full text-white p-1.5">
                                 <Plus />
-                            </Button>
+                            </Button>}
                         </div>
-                        <div className="flex justify-between items-center mt-14">
+
+                        {!documentId && <div className="flex justify-between items-center mt-14">
                             <h3 className="text-black font-medium text-xl" >Documents</h3>
                             <div className="flex items-center gap-3 text-blue-900">
                                 <button>
@@ -200,7 +206,7 @@ const ContentWrapper = ({ children }) => {
                                     <SlidersHorizontal />
                                 </button>
                             </div>
-                        </div>
+                        </div>}
                         <div className="mt-12">
                             {children}
                         </div>
