@@ -4,7 +4,7 @@ const nextConfig = {
         remotePatterns: [
             // 'img.freepik.com'
         ]
-    }
+    },
 };
 
 export default nextConfig;

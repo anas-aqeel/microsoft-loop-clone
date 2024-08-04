@@ -1,4 +1,4 @@
-import RichTextEditor from '@/app/(routes)/_components/RichTextEditor'
+import RichTextEditor from '@/app/(routes)/_components/RichTextEditor/RichTextEditor'
 import React from 'react'
 
 const Document = () => {
