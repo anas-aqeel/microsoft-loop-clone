@@ -83,7 +83,7 @@ const ContentWrapper = ({ children }) => {
                         </div>
                     </div>
                     <div className="w-full h-[1px] bg-gray-300 mt-6"></div>
-                    <div className="flex-1 w-full flex-col flex overflow-y-scroll">
+                    <div className="flex-1 w-full flex-col flex ">
                         <div className="cursor-pointer sticky top-0 left-0 bg-inherit z-30 backdrop-blur-3xl flex justify-between items-start w-full py-3 px-4 text-[#969696] rounded-md mt-5">
                             <div className="flex flex-col gap-1">
                                 <h6 className="font-medium text-lg text-black">{data.workspaceName || "Untitled"}</h6>

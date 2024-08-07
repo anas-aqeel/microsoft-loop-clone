@@ -39,13 +39,21 @@ const WorkspaceProvider = ({ children }) => {
                     emoji: null,
                     createdBy: user?.primaryEmailAddress?.emailAddress,
                     workspaceId,
-                    id: docId,
-                    documentOutput: []
+                    id: docId
                 });
+
+                // Set initial document output with additional fields
                 await setDoc(doc(db, "DocumentOutputs", docId), {
                     docId,
-                    output: []
+                    description: "",
+                    version: 1,
+                    createdBy: user?.primaryEmailAddress?.emailAddress,
+                    updatedBy: user?.primaryEmailAddress?.emailAddress,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    lastUpdated: new Date(),
                 });
+
                 toast({
                     title: "New Document Created",
                     description: "Your Document has been saved to the workspace."

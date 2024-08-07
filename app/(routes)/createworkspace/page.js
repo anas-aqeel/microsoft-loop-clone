@@ -49,8 +49,14 @@ const CreateWorkSpace = () => {
             })
             await setDoc(doc(db, "DocumentOutputs", docId), {
                 docId,
-                output: []
-            })
+                description: "",
+                version: 1,
+                createdBy: user?.primaryEmailAddress?.emailAddress,
+                updatedBy: user?.primaryEmailAddress?.emailAddress,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                lastUpdated: new Date(),
+            });
             replace(`/workspace/${workspaceId}/${docId}`)
             toast({
                 title: "Workspace Successfully Created",
