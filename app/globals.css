@@ -106,3 +106,23 @@ body {
   background-color: #f1f6f9;
 }
 
+/* Scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f4f4f4; /* Background color of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #b3b3b3; /* Color of the scrollbar thumb */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #888888; /* Darker shade when hovering */
+}
+
+/* Optional: if you want to style the scrollbar track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #e0e0e0; /* Track color */
+  border-radius: 4px;
+}

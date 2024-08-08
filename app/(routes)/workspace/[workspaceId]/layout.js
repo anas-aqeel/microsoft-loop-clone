@@ -8,7 +8,7 @@ import { useWorkspace, WorkspaceProvider } from "../_context";
 import { useParams, useRouter } from "next/navigation";
 import { CustomDropdownMenu } from "../../_components/OptionsMenu";
 import { Progress } from "@/components/ui/progress";
-
+import "@liveblocks/react-ui/styles.css";
 
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
@@ -49,7 +49,7 @@ const ContentWrapper = ({ children }) => {
 
         loading ? (
             <div className="flex h-screen">
-                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen flex flex-col gap-4 justify-center items-center`}>
+                <div className={`w-0 ${collapse ? "lg:w-0" : "lg:w-[320px]"} h-screen flex flex-col gap-4 justify-center items-center`}>
                     <img src="/images/loader.png" className="animate-spin h-8 w-auto" />
                     <h3 className="animate-pulse">Fetching Data</h3>
                 </div>
@@ -60,7 +60,7 @@ const ContentWrapper = ({ children }) => {
             </div>
         ) : (
             <div className="flex h-screen">
-                <div className={`w-0 ${collapse ? "md:w-0" : "md:w-[20%]"} h-screen transition-all duration-200 overflow-hidden flex flex-col pt-5`}>
+                <div className={`w-0 ${collapse ? "lg:w-0" : "lg:w-[320px]"} h-screen transition-all duration-200 overflow-hidden flex flex-col pt-5`}>
                     <div className="px-2">
                         <div className="flex w-full justify-between items-center px-2">
                             <div className="flex items-center gap-1.5 text-2xl font-bold">
