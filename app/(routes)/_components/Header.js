@@ -1,9 +1,31 @@
 'use client'
-import { OrganizationSwitcher, useAuth, UserButton } from '@clerk/nextjs'
-import React from 'react'
+import { db } from '@/config/FirebaseConfig'
+import { OrganizationSwitcher, useAuth, UserButton, useUser } from '@clerk/nextjs'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import React, { useEffect } from 'react'
 
 const Header = ({ logo = true }) => {
-  let { orgId } = useAuth()
+  let { user } = useUser()
+
+  let saveUserInfo = async () => {
+    const docSnapshot = await getDoc(doc(db, "users", user.id));
+    if (!docSnapshot.exists()) {
+      try {
+        await setDoc(doc(db, "users", user.id), {
+          name: user.fullName,
+          avatar: user.imageUrl,
+          email: user.primaryEmailAddress.emailAddress
+        })
+
+      } catch (error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  useEffect(() => {
+    user && saveUserInfo()
+  }, [user])
   return (
     <div className="sticky bg-white top-0 z-50 right-0 left-0">
       <div
