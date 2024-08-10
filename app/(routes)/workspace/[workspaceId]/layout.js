@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal, Bell } from "lucide-react";
 import Header from "../../_components/Header";
 import CoverPicker from "../../_components/CoverPicker";
 import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
@@ -9,6 +9,8 @@ import { useParams, useRouter } from "next/navigation";
 import { CustomDropdownMenu } from "../../_components/OptionsMenu";
 import { Progress } from "@/components/ui/progress";
 import "@liveblocks/react-ui/styles.css";
+import { NotificationBox } from "../../_components/Notification/NotificationBox";
+import { Provider } from "../../_components/Notification/Provider";
 
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
@@ -66,7 +68,13 @@ const ContentWrapper = ({ children }) => {
                             <div className="flex items-center gap-1.5 text-2xl font-bold">
                                 <img src="/images/Sync.png" alt="" className="h-12 w-auto" />
                                 Sync</div>
-                            <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowLeftFromLine} />
+                            <div className="flex items-center gap-3">
+                                <Provider roomId={"1"}>
+
+                                    <NotificationBox />
+                                </Provider>
+                                <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowLeftFromLine} />
+                            </div>
                         </div>
                         <div className="cursor-pointer flex justify-between items-center w-full py-3 px-4 text-[#969696] hover:text-[#d2d2d2] hover:bg-[#000000] rounded-md mt-5">
                             <div className="flex items-center gap-3">
@@ -135,7 +143,7 @@ const ContentWrapper = ({ children }) => {
                 </div>
 
                 <div className="flex-1 bg-white h-screen shadow-xl relative overflow-y-scroll pb-3">
-                    <div className={`absolute top-3 left-2 ${collapse ? "visible" : "invisible"}`}>
+                    <div className={`absolute top-3 left-2 ${collapse ? "visible z-50" : "invisible"}`}>
                         <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
                     </div>
                     <Header logo={false} />

@@ -126,3 +126,9 @@ body {
   background-color: #e0e0e0; /* Track color */
   border-radius: 4px;
 }
+
+.lb-composer-actions .lb-button{
+  background-color: black !important;
+  border-radius: 10px;
+  padding: 6px !important;
+}

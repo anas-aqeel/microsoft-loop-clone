@@ -10,9 +10,11 @@ import {
 import { doc, getDoc } from 'firebase/firestore'
 import { Loader2 } from 'lucide-react'
 
-export function Room({ children, roomId }) {
+export function Provider({ children, roomId }) {
   const { user } = useUser()
   const { userId, orgId } = useAuth()
+
+
 
   return (
     <LiveblocksProvider
@@ -75,18 +77,7 @@ export function Room({ children, roomId }) {
       }}
     >
       <RoomProvider id={roomId}>
-        <ClientSideSuspense
-          fallback={
-            <div className="flex flex-col items-center justify-center h-full">
-              <div className="relative">
-                <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <Loader2 className="w-10 h-10 text-yellow-400 animate-spin" />
-                </div>
-              </div>
-              <p className="mt-4 text-gray-600 text-sm">Loading...</p>
-            </div>
-          }
-        >
+        <ClientSideSuspense fallback={<div className='animate-spin'><Loader2 /></div>}>
           {children}
         </ClientSideSuspense>
       </RoomProvider>
