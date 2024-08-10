@@ -1,19 +1,19 @@
 'use client'
 
 import { db } from '@/config/FirebaseConfig'
-import { useClerk, useUser } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 import {
   LiveblocksProvider,
   RoomProvider,
   ClientSideSuspense,
 } from '@liveblocks/react/suspense'
-import { collection, getDocs, query, where } from 'firebase/firestore'
-
+import { doc, getDoc } from 'firebase/firestore'
 import { useParams } from 'next/navigation'
 
 export function Room({ children }) {
-  let { user } = useUser()
-  let { documentId } = useParams()
+  const { user } = useUser()
+  const { userId, orgId } = useAuth()
+  const { documentId } = useParams()
 
   return (
     <LiveblocksProvider
@@ -30,31 +30,49 @@ export function Room({ children }) {
 
         return await response.json()
       }}
-      resolveUsers={async ({ userIds }) => {
-        console.log(userIds)
-        const q = query(collection(db, 'users'), where('email', 'in', userIds))
-        const querySnapshot = await getDocs(q)
-        const userList = []
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data())
-          userList.push(doc.data())
-        })
-        return userList
+      resolveUsers={async ({ userIds:userEmails }) => {
+        console.log('userEmails', userEmails)
+        const ref = doc(db, 'users', orgId || userId)
+        const documentSnapshot = await getDoc(ref)
+
+        if (documentSnapshot.exists()) {
+          const documentData = documentSnapshot.data()
+
+          if (orgId) {
+            return documentData.members.filter((member) =>
+              userEmails.includes(member.email),
+            )
+          } else {
+            return [documentData]
+          }
+        } else {
+          console.error('Document does not exist')
+          return []
+        }
       }}
       resolveMentionSuggestions={async ({ text, roomId }) => {
-        const q = query(collection(db, 'users'), where('email', '!=', null))
-        let userList = (await getDocs(q)).map((doc) => doc.data())
+        
+        const ref = doc(db, 'users', orgId || userId)
+        const documentSnapshot = await getDoc(ref)
 
-        if (text) {
-          userList = userList.filter((user) => user.name.includes(text))
+        if (documentSnapshot.exists()) {
+          let userList = orgId
+            ? documentSnapshot.data().members
+            : [documentSnapshot.data()]
+
+          if (text) {
+            userList = userList.filter((user) => user.name.includes(text))
+          }
+
+          return userList
+            .filter(
+              (user_) => user_.email !== user.primaryEmailAddress.emailAddress,
+            )
+            .map((user) => user.email)
+        } else {
+          console.error('Document does not exist')
+          return []
         }
-
-        // Return a list of user IDs that match the query
-        return userList
-          .filter(
-            (user_) => user_.email != user.primaryEmailAddress.emailAddress,
-          )
-          .map((user) => user.email)
       }}
     >
       <RoomProvider id={documentId}>

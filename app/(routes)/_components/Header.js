@@ -1,31 +1,78 @@
 'use client'
 import { db } from '@/config/FirebaseConfig'
-import { OrganizationSwitcher, useAuth, UserButton, useUser } from '@clerk/nextjs'
+import { OrganizationSwitcher, useAuth, useOrganization, UserButton, useUser } from '@clerk/nextjs'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Header = ({ logo = true }) => {
-  let { user } = useUser()
+  const { userId, orgId } = useAuth();
+  const { user } = useUser();
 
-  let saveUserInfo = async () => {
-    const docSnapshot = await getDoc(doc(db, "users", user.id));
-    if (!docSnapshot.exists()) {
-      try {
-        await setDoc(doc(db, "users", user.id), {
-          name: user.fullName,
-          avatar: user.imageUrl,
-          email: user.primaryEmailAddress.emailAddress
-        })
+  const saveUserInfo = async () => {
+    try {
+      if (orgId) {
+        const docRef = doc(db, "users", orgId);
+        const docSnapshot = await getDoc(docRef);
 
-      } catch (error) {
-        console.error(error.message)
+        if (docSnapshot.exists()) {
+          const members = docSnapshot.data().members || [];
+
+          // Check if the user is already a member by email
+          const userExists = members.some(member => member.email === user.primaryEmailAddress.emailAddress);
+
+          if (!userExists) {
+            await setDoc(docRef, {
+              members: [
+                ...members,
+                {
+                  id: userId,
+                  name: user.fullName,
+                  avatar: user.imageUrl,
+                  email: user.primaryEmailAddress.emailAddress,
+                }
+              ],
+            });
+          } else {
+            console.log("User already exists in the members list.");
+          }
+        } else {
+          await setDoc(docRef, {
+            id: orgId,
+            members: [{
+              id: userId,
+              name: user.fullName,
+              avatar: user.imageUrl,
+              email: user.primaryEmailAddress.emailAddress,
+            }],
+          });
+        }
+      } else if (userId) {
+        const docRef = doc(db, "users", userId);
+        const docSnapshot = await getDoc(docRef);
+
+        if (!docSnapshot.exists()) {
+          await setDoc(docRef, {
+            id: userId,
+            name: user.fullName,
+            avatar: user.imageUrl,
+            email: user.primaryEmailAddress.emailAddress,
+          });
+        }
       }
+    } catch (error) {
+      console.error("Error saving user info:", error);
+    } finally {
+      console.log("User info saved successfully.");
     }
-  }
+  };
+
 
   useEffect(() => {
-    user && saveUserInfo()
-  }, [user])
+    if (user) {
+      saveUserInfo();
+    }
+  }, [user]);
+
   return (
     <div className="sticky bg-white top-0 z-50 right-0 left-0">
       <div
