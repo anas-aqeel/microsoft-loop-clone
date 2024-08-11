@@ -1,6 +1,6 @@
 "use client";
 
-import { useInboxNotifications } from "@liveblocks/react/suspense";
+import { useInboxNotifications, useUnreadInboxNotificationsCount, useUpdateRoomNotificationSettings } from "@liveblocks/react/suspense";
 import {
     InboxNotification,
     InboxNotificationList,
@@ -8,12 +8,20 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useEffect } from "react";
 
 export function NotificationBox() {
-    const { inboxNotifications } = useInboxNotifications();
 
+    const { inboxNotifications } = useInboxNotifications();
+    const updateRoomNotificationSettings = useUpdateRoomNotificationSettings();
+    const { count, error, isLoading } = useUnreadInboxNotificationsCount();
     const hasNotifications = inboxNotifications.length > 0;
+
+    useEffect(() => {
+        updateRoomNotificationSettings({ threads: 'all' })
+        console.log(count)
+    }, [count])
+
 
     return (
         <Popover>
@@ -21,9 +29,9 @@ export function NotificationBox() {
 
                 <div className="relative">
                     <Bell className="text-gray-800 text-lg" />
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
-                        3
-                    </span>
+                    {Number(count) > 0 && !isLoading && !error && inboxNotifications.length > 0 && <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                        {count}
+                    </span>}
                 </div>
             </PopoverTrigger>
             <PopoverContent className="w-96">

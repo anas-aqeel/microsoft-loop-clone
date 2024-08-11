@@ -31,6 +31,7 @@ export function Provider({ children, roomId }) {
           return data
         } catch (error) {
           console.log(error.message)
+          return {}
         }
       }}
       resolveUsers={async ({ userIds: userEmails }) => {

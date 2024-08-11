@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import "@liveblocks/react-ui/styles.css";
 import { NotificationBox } from "../../_components/Notification/NotificationBox";
 import { Provider } from "../../_components/Notification/Provider";
+import { useUser } from "@clerk/nextjs";
 
 
 let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
@@ -25,6 +26,7 @@ const ContentWrapper = ({ children }) => {
     const { data, collapse, setCollapse, loading, createDocument, pending, update } = useWorkspace();
     let { workspaceId, documentId } = useParams();
     let { push } = useRouter();
+    let { user } = useUser()
 
     const menuData = {
         group1: [
@@ -69,8 +71,7 @@ const ContentWrapper = ({ children }) => {
                                 <img src="/images/Sync.png" alt="" className="h-12 w-auto" />
                                 Sync</div>
                             <div className="flex items-center gap-3">
-                                <Provider roomId={"1"}>
-
+                                <Provider roomId={user ? user.id : "1"}>
                                     <NotificationBox />
                                 </Provider>
                                 <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowLeftFromLine} />
