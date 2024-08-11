@@ -8,6 +8,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function NotificationBox() {
     const { inboxNotifications } = useInboxNotifications();
@@ -17,13 +18,21 @@ export function NotificationBox() {
     return (
         <Popover>
             <PopoverTrigger>
-                <Bell className="text-gray-800 text-lg" />
+
+                <div className="relative">
+                    <Bell className="text-gray-800 text-lg" />
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                        3
+                    </span>
+                </div>
             </PopoverTrigger>
-            <PopoverContent className="w-72">
+            <PopoverContent className="w-96">
                 {hasNotifications ? (
-                    <InboxNotificationList>
+                    <InboxNotificationList className="inbox-list z-50">
                         {inboxNotifications.map((inboxNotification) => (
                             <InboxNotification
+
+                                className="notification z-50"
                                 key={inboxNotification.id}
                                 inboxNotification={inboxNotification}
                             />
