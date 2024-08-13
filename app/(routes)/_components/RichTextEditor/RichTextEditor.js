@@ -13,6 +13,11 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ShieldAlert, LayoutGrid, Loader2 } from "lucide-react";
 import PromptGallery from "../PromptGallery";
 import { generateTemplate } from "@/app/_utils/generate_ai_message";
+import CodeBlock from '@tiptap/extension-code-block'
+import Table from '@tiptap/extension-table'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
+import TableRow from '@tiptap/extension-table-row'
 
 export default function Edit() {
   const [data, setData] = useState("");
@@ -156,6 +161,15 @@ export default function Edit() {
           className="w-full min-h-[30vh]"
           defaultValue={data}
           disableLocalStorage={true}
+          extensions={[
+            CodeBlock,
+            Table.configure({
+              resizable: true,
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
+          ]}
           onUpdate={(e) => {
             if (data && e.storage.markdown.getMarkdown() !== data) {
 
@@ -172,7 +186,7 @@ export default function Edit() {
         <Button
           disabled={isGenerating}
           variant="outline"
-          className="flex gap-2 absolute bottom-2 left-10"
+          className="flex gap-2 sticky bottom-2 left-10"
         >
           {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LayoutGrid className="h-4 w-4" />}
           Generate AI Template

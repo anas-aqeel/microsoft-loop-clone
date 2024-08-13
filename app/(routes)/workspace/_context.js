@@ -28,24 +28,34 @@ const WorkspaceProvider = ({ children }) => {
         coverImg: "/images/workspacecover.webp"
     });
 
-    const createDocument = async () => {
+    const createDocument = async (id = "", title = "Untitled", coverImg = "/images/workspacecover.webp", emoji = null, workspaceid = "", description = "") => {
         if (data.documents.length < 5) {
             setPending(true);
-            let docId = uid();
+            let docId = id != "" ? id : uid();
+            console.log("Document Received: ", {
+                title,
+                coverImg,
+                emoji,
+                createdBy: user?.primaryEmailAddress?.emailAddress,
+                workspaceId: workspaceid != "" ? workspaceid : workspaceId,
+                id: docId
+            })
+
             try {
                 await setDoc(doc(db, "Documents", docId), {
-                    title: "Untitled",
-                    coverImg: '/images/workspacecover.webp',
-                    emoji: null,
+                    title,
+                    coverImg,
+                    shareable: false,
+                    emoji: emoji || null,
                     createdBy: user?.primaryEmailAddress?.emailAddress,
-                    workspaceId,
+                    workspaceId: workspaceid != "" ? workspaceid : workspaceId,
                     id: docId
                 });
 
                 // Set initial document output with additional fields
                 await setDoc(doc(db, "DocumentOutputs", docId), {
                     docId,
-                    description: "",
+                    description: description,
                     version: 1,
                     createdBy: user?.primaryEmailAddress?.emailAddress,
                     updatedBy: user?.primaryEmailAddress?.emailAddress,
@@ -60,9 +70,11 @@ const WorkspaceProvider = ({ children }) => {
                 });
                 push(`/workspace/${workspaceId}/${docId}`);
             } catch (error) {
+                console.log(error)
                 toast({
                     title: "Error Creating document",
-                    description: "Your Workspace has been saved to the database."
+                    description: "Your Workspace has been saved to the database.",
+                    variant: "destructive"
                 });
             } finally {
                 setPending(false);
@@ -188,7 +200,7 @@ const WorkspaceProvider = ({ children }) => {
 
     return (
         <WorkspaceContext.Provider value={{
-            data, collapse, setCollapse, loading, pending, createDocument, update: {
+            data, setData, collapse, setCollapse, loading, pending, createDocument, update: {
                 setEmoji,
                 setTitle,
                 setCoverImg

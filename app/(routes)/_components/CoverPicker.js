@@ -14,7 +14,7 @@ const CoverPicker = ({ children, onUpdate, currentImg }) => {
       setSelectedImage('')
     }}>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className="px-0 max-w-2xl  h-[600px] flex flex-col w-full">
+      <DialogContent className="px-0 max-w-2xl  h-[600px] z-[6000] flex flex-col w-full">
         <div className={'flex gap-6  border-b px-6 items-center pb-4'}>
           <img src={currentImg} className='h-fit w-24 rounded-lg' />
           <div className=''>

@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function CustomDropdownMenu({ children, parentClass, menuData }) {
+export function CustomDropdownMenu({ children, parentClass, menuData, id = "" }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -22,7 +22,7 @@ export function CustomDropdownMenu({ children, parentClass, menuData }) {
                                 <DropdownMenuItem
                                     key={itemIndex}
                                     className="flex w-full gap-2 justify-start py-2"
-                                    onClick={item.onClick}
+                                    onClick={() => item.onClick(id)}
                                 >
                                     {item.icon && <item.icon size={16} />}
                                     {item.label}

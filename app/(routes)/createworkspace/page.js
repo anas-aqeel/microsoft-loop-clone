@@ -42,6 +42,7 @@ const CreateWorkSpace = () => {
                 title: "Untitled",
                 coverImg,
                 emoji: null,
+                shareable: false,
                 createdBy: user?.primaryEmailAddress?.emailAddress,
                 workspaceId,
                 id: docId,
