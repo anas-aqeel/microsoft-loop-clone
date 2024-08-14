@@ -10,9 +10,8 @@ import { Label } from '@radix-ui/react-dropdown-menu'
 
 import { Input } from '@/components/ui/input'
 
-const EditStyleBox = ({ documentId, labels, close }) => {
-    console.log(documentId, labels, "labels")
-    let [loading, setLoading] = useState(false)
+const EditStyleBox = ({ documentId, labels, close, collection = "Documents" }) => {
+    let [loading, setLoading] = useState(true)
     let [data, setData] = useState({
         coverImg: '',
         emoji: null,
@@ -21,9 +20,10 @@ const EditStyleBox = ({ documentId, labels, close }) => {
 
     useEffect(() => {
         let saveInfo = async () => {
-            let docSnap = await getDoc(doc(db, "Documents", documentId))
+            let docSnap = await getDoc(doc(db, collection, documentId))
             if (!docSnap.exists()) return;
             setData(docSnap.data())
+            setLoading(false)
         }
 
         saveInfo()
@@ -32,15 +32,15 @@ const EditStyleBox = ({ documentId, labels, close }) => {
     let onUpdateData = async () => {
         setLoading(true)
         try {
-            await updateDoc(doc(db, "Documents", documentId), {
+            await updateDoc(doc(db, collection, documentId), {
                 coverImg: data.coverImg,
                 emoji: data.emoji,
                 title: data.title,
             })
 
             toast({
-                title: "Document Updated",
-                description: "Your document has been updated.",
+                title: `${collection} Updated`,
+                description: `Your ${collection} has been updated.`,
 
             })
 
@@ -62,7 +62,7 @@ const EditStyleBox = ({ documentId, labels, close }) => {
 
         <div className='fixed inset-0 z-[5000] min-h-screen w-full flex justify-center items-center bg-white bg-opacity-70'>
             <div className='rounded-2xl max-w-xl shadow-xl bg-white'>
-                <div className='group relative  cursor-pointer'>
+                {loading ? <div className='w-full h-52 bg-gray-200 animate-pulse'></div> : <div className='group relative  cursor-pointer'>
                     <img
                         src={data.coverImg}
                         width={576}
@@ -82,7 +82,7 @@ const EditStyleBox = ({ documentId, labels, close }) => {
                         </Button>
                     </CoverPicker>
 
-                </div>
+                </div>}
                 <div className='pt-2 pb-10 px-12 '>
                     <h2 className='text-xl font-medium mb-3'>{labels.title}</h2>
                     <p>{labels.subtitle}</p>

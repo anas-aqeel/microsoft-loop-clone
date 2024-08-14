@@ -48,16 +48,13 @@ const Layout = ({ children }) => {
                                 src={data.coverImg}
                                 width={576}
                                 height={208}
-                                className='rounded-b-xl w-full h-[42vh] object-cover  transition-all duration-200'
+                                className='rounded-b-xl w-full h-[50vh] object-cover  transition-all duration-200'
                                 alt=""
                             />}
-
-
-
                         </div>
                         {
                             loading ? (
-                                <div className="max-w-6xl mx-auto absolute bottom-[-25px] left-0 right-0">
+                                <div className="max-w-6xl mx-auto absolute bottom-[-25px] left-2 right-0">
 
                                     <div className="w-20 h-20 bg-gray-100 backdrop-blur-xl rounded-md animate-pulse"></div>
                                 </div>
@@ -75,8 +72,8 @@ const Layout = ({ children }) => {
                             {loading ? <div className="w-32 h-8 bg-gray-200 animate-pulse"></div> : <h1 className="text-4xl font-bold border-none outline-none">{data.title}</h1>}
                         </div>
 
-                        <div className="mt-12">
-                            {!loading && children}
+                        <div className="mt-6 md:mt-12">
+                            { children}
                         </div>
                     </div>
 

@@ -2,10 +2,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, deleteDoc } from "firebase/firestore";
 import { uid } from "uid";
 import { db } from "@/config/FirebaseConfig";
 import { toast } from "@/components/ui/use-toast";
+import { Trash2, ExternalLink, Share2, FilePenLine, SquareChartGantt, Copy, } from "lucide-react";
+import { idText } from "typescript";
 
 const WorkspaceContext = createContext();
 
@@ -198,8 +200,81 @@ const WorkspaceProvider = ({ children }) => {
         }
     }
 
+    let [modal, setModal] = useState({
+        open: false,
+        labels: {
+            title: "Update Document Information",
+            subtitle: "Edit your document information. Keep it short and sweet.",
+            name: "Document Name",
+        },
+        documentId: '',
+        close: () => setModal({ ...modal, open: false }),
+        link: "",
+        type: "",
+    })
+
+    let makeDuplicateDocument = async (id) => {
+
+        let docId = uid()
+        let prevDoc = data.documents.find((e) => e.id == id)
+        let docData = await getDoc(doc(db, "DocumentOutputs", id))
+        let description = docData.data().description
+
+        await createDocument(docId, prevDoc.title, prevDoc.coverImg, prevDoc.emoji, prevDoc.workspaceId, description);
+        setData({ ...data, documents: [...data.documents, { ...prevDoc, id: docId }] })
+        push(`/workspace/${workspaceId}/${docId}`)
+    }
+
+    let deleteDocument = async (id) => {
+        try {
+            await deleteDoc(doc(db, "Documents", id))
+            await deleteDoc(doc(db, "DocumentOutputs", id))
+            setData({ ...data, documents: data.documents.filter((e) => e.id != id) })
+
+            toast({ title: "Document deleted", description: "Document has been deleted", variant: "destructive" })
+            push(`/workspace/${workspaceId}/`)
+        } catch (e) {
+            toast({ title: "Error", description: "Something went wrong", variant: "destructive" })
+        }
+    }
+
+    let createShareAbleDocument = (id) => {
+        updateDoc(doc(db, "Documents", id), {
+            shareable: true
+        }).then((e) => {
+            setModal({
+                ...modal, open: true, type: "share",
+                link: `${window.location.origin || 'localhost:3000'}/view/${id}`
+            })
+
+        })
+    }
+    const menuData = {
+        group1: [
+            { label: "Open", icon: ExternalLink, onClick: (id) => window.open(`/workspace/${workspaceId}/${id}`, '_blank') },
+            {
+                label: "Share Document link", icon: Share2, onClick: createShareAbleDocument
+            },
+            {
+                label: "Rename and style", icon: FilePenLine, onClick: (id) => { setModal({ ...modal, open: true, documentId: id, type: "edit" }) },
+
+            },
+        ],
+        group2: [
+            { label: "Recap", icon: SquareChartGantt, onClick: (id) => push(`/workspace/${workspaceId}/${id}`) },
+        ],
+        group3: [
+            { label: "Duplicate", icon: Copy, onClick: makeDuplicateDocument },
+        ],
+        group4: [
+            { label: "Delete", icon: Trash2, onClick: deleteDocument },
+        ],
+    }
+
     return (
         <WorkspaceContext.Provider value={{
+            menuData,
+            modal,
             data, setData, collapse, setCollapse, loading, pending, createDocument, update: {
                 setEmoji,
                 setTitle,

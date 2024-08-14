@@ -12,12 +12,7 @@ import "@liveblocks/react-ui/styles.css";
 import { NotificationBox } from "../../_components/Notification/NotificationBox";
 import { Provider } from "../../_components/Notification/Provider";
 import { useUser } from "@clerk/nextjs";
-import { deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { toast } from "@/components/ui/use-toast";
-import { uid } from "uid";
-import { db } from "@/config/FirebaseConfig";
 import EditStyleBox from "../../_components/EditStyleBox";
-import { useState } from "react";
 import { ShareDialog } from "../../_components/ShareDialog";
 
 
@@ -30,80 +25,21 @@ let CollapseBtn = ({ collapse, setCollapse, Icon }) => {
 };
 
 const ContentWrapper = ({ children }) => {
-    const { data, setData, collapse, setCollapse, loading, createDocument, pending, update } = useWorkspace();
+    const {
+        data,
+        collapse,
+        setCollapse,
+        loading,
+        createDocument,
+        pending,
+        update,
+        modal,
+        menuData
+    } = useWorkspace();
     let { workspaceId, documentId } = useParams();
     let { push } = useRouter();
     let { user } = useUser()
-    let [modal, setModal] = useState({
-        open: false,
-        labels: {
-            title: "Update Document Information",
-            subtitle: "Edit your document information. Keep it short and sweet.",
-            name: "Document Name",
-        },
-        documentId: '',
-        close: () => setModal({ ...modal, open: false }),
-        link: "",
-        type: "",
-    })
 
-    let makeDuplicateDocument = async (id) => {
-
-        let docId = uid()
-        let prevDoc = data.documents.find((e) => e.id == id)
-        let docData = await getDoc(doc(db, "DocumentOutputs", id))
-        let description = docData.data().description
-
-        await createDocument(docId, prevDoc.title, prevDoc.coverImg, prevDoc.emoji, prevDoc.workspaceId, description);
-        setData({ ...data, documents: [...data.documents, { ...prevDoc, id: docId }] })
-        push(`/workspace/${workspaceId}/${docId}`)
-    }
-
-    let deleteDocument = async (id) => {
-        try {
-            await deleteDoc(doc(db, "Documents", id))
-            await deleteDoc(doc(db, "DocumentOutputs", id))
-            setData({ ...data, documents: data.documents.filter((e) => e.id != id) })
-
-            toast({ title: "Document deleted", description: "Document has been deleted", variant: "destructive" })
-            push(`/workspace/${workspaceId}/`)
-        } catch (e) {
-            toast({ title: "Error", description: "Something went wrong", variant: "destructive" })
-        }
-    }
-
-    let createShareAbleDocument = (id) => {
-        updateDoc(doc(db, "DocumentOutputs", id), {
-            shareable: true
-        }).then((e) => {
-            setModal({
-                ...modal, open: true, type: "share",
-                link: `${window.location.origin || 'localhost:3000'}/view/${documentId}`
-            })
-
-        })
-    }
-    const menuData = {
-        group1: [
-            { label: "Open", icon: ExternalLink, onClick: (id) => window.open(`/workspace/${workspaceId}/${id}`, '_blank') },
-            {
-                label: "Share Document link", icon: Share2, onClick: createShareAbleDocument
-            },
-            {
-                label: "Rename and style", icon: FilePenLine, onClick: (id) => { setModal({ ...modal, open: true, documentId: id, type: "edit" }) },
-
-            },
-        ],
-        group2: [
-            { label: "Recap", icon: SquareChartGantt, onClick: (id) => push(`/workspace/${workspaceId}/${id}`) },
-        ],
-        group3: [
-            { label: "Duplicate", icon: Copy, onClick: makeDuplicateDocument },
-        ],
-        group4: [
-            { label: "Delete", icon: Trash2, onClick: deleteDocument },
-        ],
-    }
 
 
 
@@ -124,7 +60,7 @@ const ContentWrapper = ({ children }) => {
         ) : (
             <>
                 {modal.open && modal.type == "edit" && <EditStyleBox documentId={modal.documentId} labels={modal.labels} close={modal.close} />}
-                {modal.open && modal.type == "share" && <ShareDialog link={modal.link} close={modal.close} />}
+                {modal.open && modal.type == "share" && <ShareDialog link={modal.link} close={modal.close}  />}
 
                 <div className="flex h-screen">
                     <div className={`w-0 ${collapse ? "lg:w-0" : "lg:w-[320px]"} h-screen transition-all duration-200 overflow-hidden flex flex-col pt-5`}>
@@ -168,8 +104,8 @@ const ContentWrapper = ({ children }) => {
                             <div className="flex flex-1 flex-col w-full gap-1 px-4 my-2.5 ">
 
                                 {data.documents.map(e => (
-                                    <button onClick={() => {
-
+                                    <button onClick={(e) => {
+                                        
                                         push(`/workspace/${workspaceId}/${e.id}`)
                                     }
                                     } key={e.id} className={`group flex rounded-lg border-none outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
@@ -178,7 +114,7 @@ const ContentWrapper = ({ children }) => {
                                             {e.emoji || <Smile />}
                                             <h4>{e.title || "Untitled"}</h4>
                                         </div>
-                                        <div className="flex gap-2 items-center">
+                                        <div className="flex gap-2 items-center" >
                                             {documentId === e.id && (
                                                 <CustomDropdownMenu id={e.id} menuData={menuData} parentClass={'h-9 w-9 rounded-full flex justify-center items-center hover:border-black border border-transparent transition-all p-0'}>
                                                     <Ellipsis size={20} />

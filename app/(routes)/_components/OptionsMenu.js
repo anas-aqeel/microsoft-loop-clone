@@ -10,7 +10,7 @@ import {
 
 export function CustomDropdownMenu({ children, parentClass, menuData, id = "" }) {
     return (
-        <DropdownMenu>
+        <DropdownMenu className="z-[1000]">
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className={parentClass}>{children}</Button>
             </DropdownMenuTrigger>
@@ -22,7 +22,10 @@ export function CustomDropdownMenu({ children, parentClass, menuData, id = "" })
                                 <DropdownMenuItem
                                     key={itemIndex}
                                     className="flex w-full gap-2 justify-start py-2"
-                                    onClick={() => item.onClick(id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        item.onClick(id)
+                                    }}
                                 >
                                     {item.icon && <item.icon size={16} />}
                                     {item.label}

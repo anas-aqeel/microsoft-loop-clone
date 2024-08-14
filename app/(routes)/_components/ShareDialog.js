@@ -48,7 +48,7 @@ export function ShareDialog({ link, close }) {
                         readOnly
                     />
                 </div>
-                <Button type="submit" onClick={handleCopy} size="sm" className="px-3 group">
+                <Button type="submit" onClick={handleCopy} size="sm" className="px-3 group bg-white">
                     <span className="sr-only">Copy</span>
                     <Icon className="h-4 w-4 text-black group-hover:text-white" />
                 </Button>

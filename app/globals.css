@@ -131,3 +131,11 @@ body {
 [data-radix-popper-content-wrapper] {
   z-index: 50 !important;
 }
+
+div[contenteditable="false"][translate="no"] {
+  padding: 0;
+}
+
+[data-radix-popper-content-wrapper] {
+  z-index: 100 !important;
+}
