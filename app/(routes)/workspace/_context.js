@@ -15,6 +15,8 @@ const WorkspaceProvider = ({ children }) => {
     const [collapse, setCollapse] = useState(false);
     const [loading, setLoading] = useState(true);
     let [pending, setPending] = useState(false);
+    let [fetchDocuments, setFetchDocuments] = useState(true);
+    let [fetchData, setFetchData] = useState(true);
 
     let { user } = useUser();
     let { push } = useRouter();
@@ -33,14 +35,6 @@ const WorkspaceProvider = ({ children }) => {
         if (data.documents.length < 10) {
             setPending(true);
             let docId = id != "" ? id : uid();
-            console.log("Document Received: ", {
-                title,
-                coverImg,
-                emoji,
-                createdBy: user?.primaryEmailAddress?.emailAddress,
-                workspaceId: workspaceid != "" ? workspaceid : workspaceId,
-                id: docId
-            })
 
             try {
                 await setDoc(doc(db, "Documents", docId), {
@@ -89,47 +83,107 @@ const WorkspaceProvider = ({ children }) => {
 
     };
 
+    const fetchWorkspaceData = async () => {
+        if (!workspaceId) return;
+
+        try {
+            let workspaceData = (await getDoc(doc(db, "workspace", workspaceId))).data();
+
+            if (documentId) {
+                setData({
+                    ...data,
+                    workspaceName: workspaceData.title || '',
+                    workspaceMembers: '1 member',
+                    documents: data.documents,
+                });
+            } else if (workspaceData.title !== '') {
+                setData({
+                    ...data,
+                    workspaceName: workspaceData.title || '',
+                    emoji: workspaceData.emoji || '',
+                    workspaceMembers: '1 member',
+                    documents: data.documents,
+                    name: workspaceData.title || '',
+                    coverImg: workspaceData.coverImg
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching Workspace Data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const fetchDocumentsData = async () => {
+        if (!workspaceId) return;
+        try {
+            const querySnapshot = await getDocs(query(
+                collection(db, "Documents"),
+                where("workspaceId", "==", workspaceId)
+            ));
+            const documents = querySnapshot.docs.map(doc => doc.data());
+            if (documentId) {
+                let documentData = documents.find(doc => doc.id === documentId);
+                setData({
+                    ...data,
+                    emoji: documentData.emoji || '',
+                    workspaceMembers: '1 member',
+                    documents: documents || [],
+                    name: documentData.title || '',
+                    coverImg: documentData.coverImg,
+                });
+            } else {
+                setData({
+                    ...data,
+                    documents: documents || [],
+
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setFetchDocuments(false);
+            setFetchData(false);
+        }
+    };
+
+    const fetchDocumentData = async () => {
+        if (!workspaceId || !documentId) return;
+        try {
+            let documentData = data.documents.find(doc => doc.id === documentId);
+            setData({
+                ...data,
+                emoji: documentData.emoji || '',
+                workspaceMembers: '1 member',
+                documents: data.documents,
+                name: documentData.title || '',
+                coverImg: documentData.coverImg
+            });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setFetchData(false)
+        }
+    }
+
+
+
     useEffect(() => {
         !loading && setLoading(true)
-        const fetchData = async () => {
-            if (!workspaceId) return;
+        !fetchDocuments && setFetchDocuments(true)
+        !fetchData && setFetchData(true)
 
-            try {
-                let workspaceData = (await getDoc(doc(db, "workspace", workspaceId))).data();
-                const querySnapshot = await getDocs(query(
-                    collection(db, "Documents"),
-                    where("workspaceId", "==", workspaceData.id)
-                ));
-                const documents = querySnapshot.docs.map(doc => doc.data());
-                if (documentId) {
-                    let documentData = (await getDoc(doc(db, "Documents", documentId))).data();
-                    setData({
-                        workspaceName: workspaceData.title || '',
-                        emoji: documentData.emoji || '',
-                        workspaceMembers: '1 member',
-                        documents: documents || [],
-                        name: documentData.title || '',
-                        coverImg: documentData.coverImg
-                    });
-                } else if (workspaceData.title !== '') {
-                    setData({
-                        workspaceName: workspaceData.title || '',
-                        emoji: workspaceData.emoji || '',
-                        workspaceMembers: '1 member',
-                        documents: documents || [],
-                        name: workspaceData.title || '',
-                        coverImg: workspaceData.coverImg
-                    });
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        fetchWorkspaceData();
+        fetchDocumentsData()
+    }, [workspaceId]);
 
-        fetchData();
-    }, [workspaceId, documentId]);
+    useEffect(() => {
+        if (documentId) {
+            !fetchData && setFetchData(true)
+            fetchDocumentData()
+        }
+    }, [documentId])
+
+
 
 
     let updateData = async (collectionName, id, key, value) => {
@@ -282,6 +336,12 @@ const WorkspaceProvider = ({ children }) => {
                 setEmoji,
                 setTitle,
                 setCoverImg
+            },
+            loadingState: {
+                loading,
+                fetchDocuments,
+                fetchData,
+                pending
             }
         }}>
             {children}

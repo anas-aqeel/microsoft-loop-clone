@@ -1,35 +1,118 @@
 "use client"
 import CommentBox from '@/app/(routes)/_components/CommentBox'
-import { NotificationBox } from '@/app/(routes)/_components/Notification/NotificationBox'
-import { Provider } from '@/app/(routes)/_components/Notification/Provider'
 import RichTextEditor from '@/app/(routes)/_components/RichTextEditor/RichTextEditor'
 import { Room } from '@/app/(routes)/Room'
 import { Button } from '@/components/ui/button'
-import { Bell, MessageCircleMore } from 'lucide-react'
+import { MessageCircleMore } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useState } from 'react'
+
+import { useWorkspace } from "../../_context"
+import { ImagePlus, X, Smile } from "lucide-react"
+import Header from '../../../_components/Header'
+import CoverPicker from '../../../_components/CoverPicker'
+import EmojiPickerConponent from '../../../_components/EmojiPickerComponent'
+
+
+
 
 const Document = () => {
   let [show, setShow] = useState(false)
   let { documentId } = useParams()
-
+  const {
+    data,
+    update,
+  } = useWorkspace();
 
   return (
-    <div className='relative'>
-      <RichTextEditor />
+    <>
 
-      <Button onClick={() => setShow(!show)} className="fixed right-10 bottom-5 z-40 text-white rounded-full h-14 w-14 p-0 flex justify-center items-center">
-        <MessageCircleMore />
-      </Button>
 
-      <div className={`fixed right-10 bottom-5 z-50 w-full max-w-xl  rounded-md bg-white shadow-lg ${show ? 'h-[520px] py-3 px-2' : 'h-0 p-0'} overflow-hidden transition-all`}>
-        <Room roomId={documentId}>
-          <CommentBox show={show} setShow={setShow} />
-        </Room>
+      {/* <div className={`absolute top-3 left-2 ${collapse ? "visible z-50" : "invisible"}`}>
+        <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
+      </div> */}
+
+
+      <Header logo={false} />
+      <div className="relative">
+        <div className='group relative  cursor-pointer'>
+          <img
+            src={data.coverImg}
+            width={576}
+            height={208}
+            className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
+            alt=""
+          />
+          <label htmlFor="cover" className='absolute inset-0'></label>
+          <CoverPicker onUpdate={(e) => {
+
+            update.setCoverImg(documentId, e)
+          }}
+            currentImg={data.coverImg}>
+
+            <Button
+              id="cover"
+              className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
+            >
+              <ImagePlus className='text-white bg-gray-800' />
+              Update Cover
+            </Button>
+          </CoverPicker>
+
+        </div>
+
+        <div className={`absolute bottom-[-25px] left-0 right-0 w-full max-w-6xl mx-auto px-4 ${!Boolean(data.emoji) ? 'invisible' : 'visible'}`}>
+          <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
+
+            {data.emoji}
+            <Button onClick={() => { update.setEmoji(documentId, null) }} className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-400 bg rounded-full text-sm bg-white">
+              <X size={22} />
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="sticky max-w-6xl mx-auto px-4 pt-4 ">
+
+
+        <EmojiPickerConponent setEmoji={(e) => { update.setEmoji(documentId, e) }} parentAttributes={{
+          className: `flex gap-2 mb-8 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black  ${!Boolean(data.emoji) ? 'visible' : 'invisible'}`,
+          variant: 'filled'
+        }}>
+
+          <Smile size={16} />
+          Add Emoji
+        </EmojiPickerConponent>
+
+        <div className="flex justify-between items-center">
+          <input className="text-4xl font-bold border-none outline-none" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId, e.target.value)} />
+
+
+        </div>
+
+
+        <div className="mt-12">
+          <div className='relative'>
+            <RichTextEditor />
+
+            <Button onClick={() => setShow(!show)} className="fixed right-10 bottom-5 z-40 text-white rounded-full h-14 w-14 p-0 flex justify-center items-center">
+              <MessageCircleMore />
+            </Button>
+
+            <div className={`fixed right-10 bottom-5 z-50 w-full max-w-xl  rounded-md bg-white shadow-lg ${show ? 'h-[520px] py-3 px-2' : 'h-0 p-0'} overflow-hidden transition-all`}>
+              <Room roomId={documentId}>
+                <CommentBox show={show} setShow={setShow} />
+              </Room>
+            </div>
+
+
+          </div>
+        </div>
       </div>
 
 
-    </div>
+
+
+    </>
   )
 }
 
