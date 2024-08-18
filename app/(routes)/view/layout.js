@@ -69,7 +69,7 @@ const Layout = ({ children }) => {
                     </div>
                     <div className="sticky max-w-6xl mx-auto px-4 pt-12 ">
                         <div className="flex  items-center">
-                            {loading ? <div className="w-32 h-8 bg-gray-200 animate-pulse"></div> : <h1 className="text-4xl font-bold border-none outline-none">{data.title}</h1>}
+                            {loading ? <div className="w-32 h-8 bg-gray-200 animate-pulse"></div> : <h1 className="text-4xl font-bold border-none outline-none w-full">{data.title}</h1>}
                         </div>
 
                         <div className="mt-6 md:mt-12">

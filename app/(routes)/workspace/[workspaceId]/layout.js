@@ -1,7 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal, Bell } from "lucide-react";
-import Header from "../../_components/Header";
 import CoverPicker from "../../_components/CoverPicker";
 import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
 import { useWorkspace, WorkspaceProvider } from "../_context";
@@ -29,13 +28,9 @@ const ContentWrapper = ({ children }) => {
         data,
         collapse,
         setCollapse,
-        loading,
         createDocument,
-        update,
         modal,
         loadingState: { pending, fetchDocuments },
-        style,
-        setStyle,
         menuData
     } = useWorkspace();
     let { workspaceId, documentId } = useParams();

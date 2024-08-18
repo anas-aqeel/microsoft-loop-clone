@@ -87,17 +87,21 @@ const WorkspaceProvider = ({ children }) => {
         if (!workspaceId) return;
 
         try {
-            let workspaceData = (await getDoc(doc(db, "workspace", workspaceId))).data();
-
+            console.log(workspaceId)
+            let snapshot = await getDoc(doc(db, "workspace", workspaceId))
+            let workspaceData = snapshot.data()
+            console.log(workspaceData)
             if (documentId) {
-                setData({
+
+                console.log("documentId")
+                setData((data) => ({
                     ...data,
                     workspaceName: workspaceData.title || '',
                     workspaceMembers: '1 member',
                     documents: data.documents,
-                });
-            } else if (workspaceData.title !== '') {
-                setData({
+                }));
+            } else {
+                console.log("else", {
                     ...data,
                     workspaceName: workspaceData.title || '',
                     emoji: workspaceData.emoji || '',
@@ -105,7 +109,16 @@ const WorkspaceProvider = ({ children }) => {
                     documents: data.documents,
                     name: workspaceData.title || '',
                     coverImg: workspaceData.coverImg
-                });
+                })
+                setData((data) => ({
+                    ...data,
+                    workspaceName: workspaceData.title || '',
+                    emoji: workspaceData.emoji || '',
+                    workspaceMembers: '1 member',
+                    documents: data.documents,
+                    name: workspaceData.title || '',
+                    coverImg: workspaceData.coverImg
+                }));
             }
         } catch (error) {
             console.error("Error fetching Workspace Data:", error);
@@ -123,20 +136,20 @@ const WorkspaceProvider = ({ children }) => {
             const documents = querySnapshot.docs.map(doc => doc.data());
             if (documentId) {
                 let documentData = documents.find(doc => doc.id === documentId);
-                setData({
+                setData((data) => ({
                     ...data,
                     emoji: documentData.emoji || '',
                     workspaceMembers: '1 member',
                     documents: documents || [],
                     name: documentData.title || '',
                     coverImg: documentData.coverImg,
-                });
+                }));
             } else {
-                setData({
+                setData((data) => ({
                     ...data,
                     documents: documents || [],
 
-                });
+                }));
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -150,14 +163,14 @@ const WorkspaceProvider = ({ children }) => {
         if (!workspaceId || !documentId) return;
         try {
             let documentData = data.documents.find(doc => doc.id === documentId);
-            setData({
+            setData((data) => ({
                 ...data,
                 emoji: documentData.emoji || '',
                 workspaceMembers: '1 member',
                 documents: data.documents,
                 name: documentData.title || '',
                 coverImg: documentData.coverImg
-            });
+            }));
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
@@ -177,7 +190,7 @@ const WorkspaceProvider = ({ children }) => {
     }, [workspaceId]);
 
     useEffect(() => {
-        if (documentId) {
+        if (documentId && data.documents.length > 0) {
             !fetchData && setFetchData(true)
             fetchDocumentData()
         }

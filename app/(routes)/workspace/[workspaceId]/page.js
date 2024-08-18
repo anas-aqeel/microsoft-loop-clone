@@ -27,12 +27,16 @@ const page = () => {
 
 
   return (
+
     <>
 
-      {/* <div className={`absolute top-3 left-2 ${collapse ? "visible z-50" : "invisible"}`}>
-          <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
-        </div> */}
-      <Header logo={false} />
+      <div className={`absolute top-3 left-2 visible z-[5000]`}>
+        {/* <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} /> */}
+        <button onClick={() => console.log({ data })}>
+          console
+        </button>
+      </div>
+      <Header collapse={collapse} />
       <div className="relative">
         <div className='group relative  cursor-pointer'>
           <img
@@ -83,7 +87,7 @@ const page = () => {
         </EmojiPickerConponent>
 
         <div className="flex justify-between items-center">
-          <input className="text-4xl font-bold border-none outline-none" defaultValue={data.name} onBlur={(e) => update.setTitle(workspaceId, e.target.value)} />
+          <input className="text-4xl font-bold border-none outline-none w-full" defaultValue={data.name} onBlur={(e) => update.setTitle(workspaceId, e.target.value)} />
 
           <Button onClick={() => createDocument()} className="rounded-full text-white p-1.5">
             <Plus />

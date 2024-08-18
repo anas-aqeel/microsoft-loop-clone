@@ -18,6 +18,7 @@ import Table from '@tiptap/extension-table'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import TableRow from '@tiptap/extension-table-row'
+import { useWorkspace } from "../../workspace/_context";
 
 export default function Edit() {
   const [data, setData] = useState("");
@@ -30,8 +31,6 @@ export default function Edit() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [editorLocal, setEditorLocal] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [remoteData, setRemoteData] = useState(null);
-
   const SAVE_INTERVAL = 5000; // Auto-save every 5 seconds
   const DEBOUNCE_SAVE_TIME = 3000; // Debounce time for user typing
 
@@ -43,8 +42,6 @@ export default function Edit() {
       (docSnap) => {
         if (docSnap.exists()) {
           const documentData = docSnap.data();
-          setRemoteData(documentData.description);
-
           if (initialLoad) {
             setData(documentData.description);
             setDocVersion(documentData.version || 1);
@@ -144,9 +141,10 @@ export default function Edit() {
 
   return (
     <div className="relative min-h-[35vh]">
-      <Badge className="absolute top-2 right-2">
+      {!loading && <Badge className="absolute top-2 right-2">
         {unsavedChanges ? "Unsaved" : `Last saved at ${new Date(lastSavedTime).toLocaleTimeString()}`}
-      </Badge>
+      </Badge>}
+
       {uploadError && (
         <Alert>
           <ShieldAlert className="h-4 w-4" />
@@ -184,11 +182,11 @@ export default function Edit() {
 
       <PromptGallery onClick={handleGeneratePrompt}>
         <Button
-          disabled={isGenerating}
+          disabled={isGenerating || loading}
           variant="outline"
           className="flex gap-2 sticky bottom-2 left-10"
         >
-          {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <LayoutGrid className="h-4 w-4" />}
+          {(isGenerating || loading) ? <Loader2 className="h-4 w-4 animate-spin" /> : <LayoutGrid className="h-4 w-4" />}
           Generate AI Template
         </Button>
       </PromptGallery>

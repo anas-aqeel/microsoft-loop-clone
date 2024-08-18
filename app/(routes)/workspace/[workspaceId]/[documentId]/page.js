@@ -3,7 +3,7 @@ import CommentBox from '@/app/(routes)/_components/CommentBox'
 import RichTextEditor from '@/app/(routes)/_components/RichTextEditor/RichTextEditor'
 import { Room } from '@/app/(routes)/Room'
 import { Button } from '@/components/ui/button'
-import { MessageCircleMore } from 'lucide-react'
+import { ArrowRightFromLine, MessageCircleMore } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useState } from 'react'
 
@@ -16,48 +16,63 @@ import EmojiPickerConponent from '../../../_components/EmojiPickerComponent'
 
 
 
+
+
 const Document = () => {
   let [show, setShow] = useState(false)
   let { documentId } = useParams()
   const {
+    collapse,
+    setCollapse,
     data,
+    loadingState: {
+      fetchData
+    },
     update,
   } = useWorkspace();
+
+
 
   return (
     <>
 
 
-      {/* <div className={`absolute top-3 left-2 ${collapse ? "visible z-50" : "invisible"}`}>
-        <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowRightFromLine} />
-      </div> */}
+      <button onClick={() => setCollapse(!collapse)} className={`absolute top-[20%] h-14 w-14 flex justify-center items-center rounded-full shadow-xl shadow-black left-0 ${collapse ? "visible z-[5001] bg-white" : "invisible bg-transparent"}`}>
+        <ArrowRightFromLine size={"20"} />
+      </button>
 
 
-      <Header logo={false} />
+      <Header logo={collapse} />
       <div className="relative">
         <div className='group relative  cursor-pointer'>
-          <img
+          {fetchData ? (
+            <>
+              <div className="w-full h-[42vh] bg-gray-200 animate-pulse"></div>
+              <div className="w-20 h-20 bg-gray-100 backdrop-blur-xl rounded-md animate-pulse absolute bottom-[-25px] left-2 right-0"></div>
+            </>
+          ) : (<><img
             src={data.coverImg}
             width={576}
             height={208}
             className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
             alt=""
           />
-          <label htmlFor="cover" className='absolute inset-0'></label>
-          <CoverPicker onUpdate={(e) => {
+            <label htmlFor="cover" className='absolute inset-0'></label>
+            <CoverPicker onUpdate={(e) => {
 
-            update.setCoverImg(documentId, e)
-          }}
-            currentImg={data.coverImg}>
+              update.setCoverImg(documentId, e)
+            }}
+              currentImg={data.coverImg}>
 
-            <Button
-              id="cover"
-              className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
-            >
-              <ImagePlus className='text-white bg-gray-800' />
-              Update Cover
-            </Button>
-          </CoverPicker>
+              <Button
+                id="cover"
+                className="flex gap-3 py-4 opacity-0 w-fit absolute top-[50%] right-0 left-0 mx-auto group-hover:opacity-90 transition-all duration-200"
+              >
+                <ImagePlus className='text-white bg-gray-800' />
+                Update Cover
+              </Button>
+            </CoverPicker></>)}
+
 
         </div>
 
@@ -74,17 +89,17 @@ const Document = () => {
       <div className="sticky max-w-6xl mx-auto px-4 pt-4 ">
 
 
-        <EmojiPickerConponent setEmoji={(e) => { update.setEmoji(documentId, e) }} parentAttributes={{
+        {!fetchData && <EmojiPickerConponent setEmoji={(e) => { update.setEmoji(documentId, e) }} parentAttributes={{
           className: `flex gap-2 mb-8 bg-[#fafafa] hover:bg-[#f5f9fb] text-black hover:text-black  ${!Boolean(data.emoji) ? 'visible' : 'invisible'}`,
           variant: 'filled'
         }}>
 
           <Smile size={16} />
           Add Emoji
-        </EmojiPickerConponent>
+        </EmojiPickerConponent>}
 
         <div className="flex justify-between items-center">
-          <input className="text-4xl font-bold border-none outline-none" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId, e.target.value)} />
+          <input className="text-4xl font-bold border-none outline-none w-full" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId, e.target.value)} />
 
 
         </div>

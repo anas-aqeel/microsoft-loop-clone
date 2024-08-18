@@ -4,7 +4,7 @@ import { OrganizationSwitcher, useAuth, useOrganization, UserButton, useUser } f
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 
-const Header = ({ logo = true }) => {
+const Header = ({ logo = true}) => {
   const { userId, orgId } = useAuth();
   const { user } = useUser();
 
@@ -74,12 +74,12 @@ const Header = ({ logo = true }) => {
   }, [user]);
 
   return (
-    <div className="sticky bg-white top-0 z-50 right-0 left-0">
+    <div className="sticky bg-white top-0 z-[5000] right-0 left-0 border-b border-gray-300">
       <div
         className="flex justify-between py-2.5 px-3  items-center
        mx-auto"
       >
-        <div className={`flex items-center gap-2 ${logo ? 'visible' : 'invisible'}`}>
+        <div className={`flex items-center gap-2 ${logo ? 'visible opacity-100' : 'invisible opacity-0'} transition-all`}>
           <img src="/images/Sync.png" className="w-[40px] h-auto" />
           <h5 className="font-black text-xl">Sync</h5>
         </div>
