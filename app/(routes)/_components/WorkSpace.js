@@ -70,6 +70,8 @@ const WorkSpace = () => {
   };
   let { push } = useRouter();
 
+
+  let [style, setStyle] = useState('table')
   return (
     <>
       {modal.open && <EditStyleBox close={modal.close} open={modal.open} collection='workspace' documentId={modal.workspaceId} labels={modal.labels} />}
@@ -82,12 +84,12 @@ const WorkSpace = () => {
         </div>
         <div className="flex justify-between items-center mt-14">
           <h3 className="text-black font-medium text-2xl">Workspaces</h3>
-          <div className="flex items-center gap-3 text-blue-900">
-            <button>
-              <LayoutGrid />
+          <div className="flex items-center gap-1 text-blue-900">
+            <button className={`h-10 w-10 text-xs flex justify-center items-center  rounded-full transition-all   ${style == 'grid' ? 'shadow-md bg-white to-black' : 'bg-transparent hover:bg-slate-200'}`} onClick={() => setStyle('grid')}>
+              <LayoutGrid size={18} />
             </button>
-            <button>
-              <SlidersHorizontal />
+            <button className={`h-10 w-10 text-xs flex justify-center items-center  rounded-full  transition-all  ${style == 'table' ? 'shadow-md bg-white to-black' : 'bg-transparent hover:bg-slate-200'}`} onClick={() => setStyle('table')}>
+              <SlidersHorizontal size={18} />
             </button>
           </div>
         </div>
@@ -110,7 +112,7 @@ const WorkSpace = () => {
             </Button>
           </div>
         ) : (
-          <DataTable dataList={workSpaceList} type='box' onClickFunc={(id) => push(`/workspace/${id}`)} options={menuData} />
+          <DataTable dataList={workSpaceList} type={style} onClickFunc={(id) => push(`/workspace/${id}`)} options={menuData} />
 
         )}
       </div>

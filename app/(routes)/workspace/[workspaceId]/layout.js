@@ -34,6 +34,8 @@ const ContentWrapper = ({ children }) => {
         pending,
         update,
         modal,
+        style,
+        setStyle,
         menuData
     } = useWorkspace();
     let { workspaceId, documentId } = useParams();
@@ -60,7 +62,7 @@ const ContentWrapper = ({ children }) => {
         ) : (
             <>
                 {modal.open && modal.type == "edit" && <EditStyleBox documentId={modal.documentId} labels={modal.labels} close={modal.close} />}
-                {modal.open && modal.type == "share" && <ShareDialog link={modal.link} close={modal.close}  />}
+                {modal.open && modal.type == "share" && <ShareDialog link={modal.link} close={modal.close} />}
 
                 <div className="flex h-screen">
                     <div className={`w-0 ${collapse ? "lg:w-0" : "lg:w-[320px]"} h-screen transition-all duration-200 overflow-hidden flex flex-col pt-5`}>
@@ -76,7 +78,7 @@ const ContentWrapper = ({ children }) => {
                                     <CollapseBtn collapse={collapse} setCollapse={setCollapse} Icon={ArrowLeftFromLine} />
                                 </div>
                             </div>
-                            <div className="cursor-pointer flex justify-between items-center w-full py-3 px-4 text-[#969696] hover:text-[#d2d2d2] hover:bg-[#000000] rounded-md mt-5">
+                            {/* <div className="cursor-pointer flex justify-between items-center w-full py-3 px-4 text-[#969696] hover:text-[#d2d2d2] hover:bg-[#000000] rounded-md mt-5">
                                 <div className="flex items-center gap-3">
                                     <History />
                                     Recent
@@ -88,7 +90,7 @@ const ContentWrapper = ({ children }) => {
                                     Ideas
                                 </div>
                                 <Plus className="opacity-0 group-hover:opacity-100" />
-                            </div>
+                            </div> */}
                         </div>
                         <div className="w-full h-[1px] bg-gray-300 mt-6"></div>
                         <div className="flex-1 w-full flex-col flex ">
@@ -105,7 +107,7 @@ const ContentWrapper = ({ children }) => {
 
                                 {data.documents.map(e => (
                                     <button onClick={(e) => {
-                                        
+
                                         push(`/workspace/${workspaceId}/${e.id}`)
                                     }
                                     } key={e.id} className={`group flex rounded-lg border-none outline-none py-2 text-sm text-gray-800 px-1 justify-between w-full items-center ${documentId === e.id ? "bg-white" : "bg-transparent hover:bg-gray-200"}`}>
@@ -132,11 +134,11 @@ const ContentWrapper = ({ children }) => {
                         <div className="border-t border-gray-300 pt-4">
                             <div className="flex flex-col justify-center items-center gap-5">
                                 <p className="font-medium text-gray-700">
-                                    Documents {data.documents.length} out of 5
+                                    Documents {data.documents.length} out of 10
                                 </p>
                                 <Progress
                                     className="bg-slate-300 rounded-none"
-                                    value={data.documents.length * 20}
+                                    value={data.documents.length * 10}
                                 />
                             </div>
                         </div>
@@ -206,12 +208,12 @@ const ContentWrapper = ({ children }) => {
 
                             {!documentId && <div className="flex justify-between items-center mt-14">
                                 <h3 className="text-black font-medium text-xl" >Documents</h3>
-                                <div className="flex items-center gap-3 text-blue-900">
-                                    <button>
-                                        <LayoutGrid />
+                                <div className="flex items-center gap-1 text-blue-900">
+                                    <button className={`h-10 w-10 text-xs flex justify-center items-center  rounded-full transition-all   ${style == 'grid' ? 'shadow-md bg-white to-black' : 'bg-transparent hover:bg-slate-200'}`} onClick={() => setStyle('grid')}>
+                                        <LayoutGrid size={18} />
                                     </button>
-                                    <button>
-                                        <SlidersHorizontal />
+                                    <button className={`h-10 w-10 text-xs flex justify-center items-center  rounded-full  transition-all  ${style == 'table' ? 'shadow-md bg-white to-black' : 'bg-transparent hover:bg-slate-200'}`} onClick={() => setStyle('table')}>
+                                        <SlidersHorizontal size={18} />
                                     </button>
                                 </div>
                             </div>}

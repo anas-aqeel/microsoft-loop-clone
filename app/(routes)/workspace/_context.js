@@ -7,7 +7,6 @@ import { uid } from "uid";
 import { db } from "@/config/FirebaseConfig";
 import { toast } from "@/components/ui/use-toast";
 import { Trash2, ExternalLink, Share2, FilePenLine, SquareChartGantt, Copy, } from "lucide-react";
-import { idText } from "typescript";
 
 const WorkspaceContext = createContext();
 
@@ -31,7 +30,7 @@ const WorkspaceProvider = ({ children }) => {
     });
 
     const createDocument = async (id = "", title = "Untitled", coverImg = "/images/workspacecover.webp", emoji = null, workspaceid = "", description = "") => {
-        if (data.documents.length < 5) {
+        if (data.documents.length < 10) {
             setPending(true);
             let docId = id != "" ? id : uid();
             console.log("Document Received: ", {
@@ -84,7 +83,7 @@ const WorkspaceProvider = ({ children }) => {
         } else {
             toast({
                 title: "Documents Limit Reached",
-                description: "You cannot create more than 5 documents in a single workspace"
+                description: "You cannot create more than 10 documents in a single workspace"
             })
         }
 
@@ -271,10 +270,14 @@ const WorkspaceProvider = ({ children }) => {
         ],
     }
 
+    let [style, setStyle] = useState("grid")
+
     return (
         <WorkspaceContext.Provider value={{
             menuData,
             modal,
+            style,
+            setStyle,
             data, setData, collapse, setCollapse, loading, pending, createDocument, update: {
                 setEmoji,
                 setTitle,

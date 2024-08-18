@@ -11,7 +11,8 @@ import { ShareDialog } from "../../_components/ShareDialog"
 const page = () => {
   let { push } = useRouter()
   let { workspaceId } = useParams()
-  let { data, loading, modal, menuData } = useWorkspace()
+  let { data, loading, modal, menuData, style } = useWorkspace()
+
 
 
 
@@ -22,7 +23,7 @@ const page = () => {
       (
         <>
 
-          <DataTable options={menuData} dataList={data.documents} onClickFunc={(ducumentid) => { push(`/workspace/${workspaceId}/${ducumentid}`) }} />
+          <DataTable options={menuData} dataList={data.documents} type={style} onClickFunc={(ducumentid) => { push(`/workspace/${workspaceId}/${ducumentid}`) }} />
         </>
 
       )

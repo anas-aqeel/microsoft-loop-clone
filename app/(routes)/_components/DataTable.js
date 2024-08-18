@@ -2,12 +2,12 @@ import React from 'react'
 import { CustomDropdownMenu } from './OptionsMenu'
 import { MoreHorizontalIcon, Star } from 'lucide-react'
 
-const DataTable = ({ dataList, onClickFunc, options, type = "grid" }) => {
+const DataTable = ({ dataList, onClickFunc, options, type = "table" }) => {
 
     return (
         <div className='mt-12'>
             <div className="w-full">
-                {type === "grid" ? (
+                {type === "table" ? (
                     <>
                         <div className='flex justify-between text-blue-400 text-lg'>
                             <div className=''>
@@ -38,7 +38,7 @@ const DataTable = ({ dataList, onClickFunc, options, type = "grid" }) => {
 
                                             <MoreHorizontalIcon size={16} className=' ' />
                                         </CustomDropdownMenu>
-                                        <Star size={18} />
+                                       
                                     </div>
                                 </button>
                             ))}
@@ -46,7 +46,7 @@ const DataTable = ({ dataList, onClickFunc, options, type = "grid" }) => {
                     </>
                 ) : (
                     <>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8 place-content-start'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-8 place-content-start'>
                             {dataList.map((dataItem) => {
                                 return (
                                     <button
@@ -69,7 +69,7 @@ const DataTable = ({ dataList, onClickFunc, options, type = "grid" }) => {
 
                                                     <MoreHorizontalIcon size={16} className=' ' />
                                                 </CustomDropdownMenu>
-                                                <Star size={18} />
+                                                
                                             </div>
                                         </div>
 
