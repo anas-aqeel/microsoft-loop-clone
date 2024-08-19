@@ -2,12 +2,13 @@
 import { db } from '@/config/FirebaseConfig'
 import { OrganizationSwitcher, useAuth, UserButton, useUser, ClerkLoading, ClerkLoaded } from '@clerk/nextjs'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 
 const Header = ({ logo = true }) => {
   const { userId, orgId, isLoaded } = useAuth();
   const { user } = useUser();
-
+  let { push } = useRouter()
   const saveUserInfo = async () => {
     try {
       if (orgId) {
@@ -76,13 +77,13 @@ const Header = ({ logo = true }) => {
   return (
     <div className="sticky bg-white top-0 z-[5000] right-0 left-0 border-b border-gray-300">
       <div
-        className="flex justify-between py-2.5 px-3  items-center
+        className="flex justify-between py-3 px-3  items-center
        mx-auto"
       >
-        <div className={`flex items-center gap-2 ${logo ? 'visible opacity-100' : 'invisible opacity-0'} transition-all`}>
+        <button onClick={() => push('/dashboard')} className={`flex items-center border-none outline-none gap-2 visible opacity-100 ${logo ? 'lg:visible lg:opacity-100' : 'lg:invisible lg:opacity-0'} transition-all`}>
           <img src="/images/Sync.png" className="w-[40px] h-auto" />
-          <h5 className="font-black text-xl">Sync</h5>
-        </div>
+          <span className="text-2xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-cyan-500 font-bold">Loop</span>
+        </button>
 
         <ClerkLoaded>{isLoaded && <>
           <OrganizationSwitcher

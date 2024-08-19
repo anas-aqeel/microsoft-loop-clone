@@ -1,12 +1,9 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import { ArrowLeftFromLine, ArrowRightFromLine, History, Pencil, Plus, Smile, Trash2, X, ImagePlus, Ellipsis, ExternalLink, Share2, Forward, FilePenLine, SquareChartGantt, Copy, LayoutGrid, SlidersHorizontal, Bell } from "lucide-react";
-import CoverPicker from "../../_components/CoverPicker";
-import EmojiPickerConponent from "../../_components/EmojiPickerComponent";
 import { useWorkspace, WorkspaceProvider } from "../_context";
 import { useParams, useRouter } from "next/navigation";
 import { CustomDropdownMenu } from "../../_components/OptionsMenu";
-import { Progress } from "@/components/ui/progress";
 import "@liveblocks/react-ui/styles.css";
 import { NotificationBox } from "../../_components/Notification/NotificationBox";
 import { Provider } from "../../_components/Notification/Provider";
@@ -53,9 +50,10 @@ const ContentWrapper = ({ children }) => {
                 <div className={`w-0 ${collapse ? "lg:w-0" : "lg:w-[320px]"} h-screen transition-all duration-200 overflow-hidden flex flex-col pt-5`}>
                     <div className="px-2">
                         <div className="flex w-full justify-between items-center px-2">
-                            <div className="flex items-center gap-1.5 text-2xl font-bold">
+                            <button onClick={() => push('/dashboard')} className="flex items-center border-none outline-none gap-1.5  font-bold">
                                 <img src="/images/Sync.png" alt="" className="h-12 w-auto" />
-                                Sync</div>
+                                <span className="text-3xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-cyan-500 font-bold">Loop</span>
+                            </button>
                             <div className="flex items-center gap-3">
                                 <Provider roomId={user ? user.id : "1"}>
                                     <NotificationBox />
