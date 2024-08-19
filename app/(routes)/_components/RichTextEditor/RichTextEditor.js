@@ -13,12 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ShieldAlert, LayoutGrid, Loader2 } from "lucide-react";
 import PromptGallery from "../PromptGallery";
 import { generateTemplate } from "@/app/_utils/generate_ai_message";
-import CodeBlock from '@tiptap/extension-code-block'
-import Table from '@tiptap/extension-table'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
-import { useWorkspace } from "../../workspace/_context";
+
 
 export default function Edit() {
   const [data, setData] = useState("");
@@ -88,7 +83,6 @@ export default function Edit() {
       return;
     }
     const newData = editor?.storage.markdown.getMarkdown();
-    console.log(newData)
     if (newData !== data) {
       console.log("Saving")
       setData(newData);
@@ -156,21 +150,13 @@ export default function Edit() {
         <Loading />
       ) : (
         <Editor
+
           className="w-full min-h-[30vh]"
           defaultValue={data}
           disableLocalStorage={true}
-          extensions={[
-            CodeBlock,
-            Table.configure({
-              resizable: true,
-            }),
-            TableRow,
-            TableHeader,
-            TableCell,
-          ]}
+
           onUpdate={(e) => {
             if (data && e.storage.markdown.getMarkdown() !== data) {
-
               setUnsavedChanges(true)
             }
           }}
@@ -179,6 +165,7 @@ export default function Edit() {
           handleImageUpload={handleImageUpload}
         />
       )}
+
 
       <PromptGallery onClick={handleGeneratePrompt}>
         <Button

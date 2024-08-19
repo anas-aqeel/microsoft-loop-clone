@@ -1,11 +1,11 @@
 'use client'
 import { db } from '@/config/FirebaseConfig'
-import { OrganizationSwitcher, useAuth, useOrganization, UserButton, useUser } from '@clerk/nextjs'
+import { OrganizationSwitcher, useAuth, UserButton, useUser, ClerkLoading, ClerkLoaded } from '@clerk/nextjs'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
-const Header = ({ logo = true}) => {
-  const { userId, orgId } = useAuth();
+const Header = ({ logo = true }) => {
+  const { userId, orgId, isLoaded } = useAuth();
   const { user } = useUser();
 
   const saveUserInfo = async () => {
@@ -83,23 +83,39 @@ const Header = ({ logo = true}) => {
           <img src="/images/Sync.png" className="w-[40px] h-auto" />
           <h5 className="font-black text-xl">Sync</h5>
         </div>
-        <OrganizationSwitcher
-          afterCreateOrganizationUrl={'/dashboard#:slug'}
-          afterSelectOrganizationUrl={'/dashboard#:slug'}
-          afterSelectPersonalUrl={'/dashboard'}
-          afterLeaveOrganizationUrl="/dashboard"
-          appearance={{
-            elements: {},
-          }}
-        />
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox: 'h-9 w-9 border border-gray-200 ',
-              userButtonBox: ' shadow-none',
-            },
-          }}
-        />
+
+        <ClerkLoaded>{isLoaded && <>
+          <OrganizationSwitcher
+            afterCreateOrganizationUrl={'/dashboard#:slug'}
+            afterSelectOrganizationUrl={'/dashboard#:slug'}
+            afterSelectPersonalUrl={'/dashboard'}
+            afterLeaveOrganizationUrl="/dashboard"
+            appearance={{
+              elements: {},
+            }}
+          />
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: 'h-9 w-9 border border-gray-200 ',
+                userButtonBox: ' shadow-none',
+              },
+            }}
+          />
+
+        </>}
+        </ClerkLoaded>
+        <ClerkLoading>
+          <div className="flex items-center animate-pulse">
+            <div className="bg-gray-300 h-6 w-6 rounded"></div> {/* Simulating the icon */}
+            <div className="ml-2 bg-gray-300 h-4 w-20 rounded"></div> {/* Simulating the text */}
+            <div className="ml-1 bg-gray-300 h-4 w-4 rounded"></div> {/* Simulating the dropdown arrow */}
+          </div>
+
+          <div className="flex items-center animate-pulse">
+            <div className="bg-gray-300 h-10 w-10 rounded-full"></div> {/* Simulating the circular profile picture */}
+          </div>
+        </ClerkLoading>
       </div>
     </div>
   )

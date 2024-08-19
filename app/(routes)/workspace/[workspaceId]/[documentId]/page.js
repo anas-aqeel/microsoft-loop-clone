@@ -9,7 +9,6 @@ import React, { useState } from 'react'
 
 import { useWorkspace } from "../../_context"
 import { ImagePlus, X, Smile } from "lucide-react"
-import Header from '../../../_components/Header'
 import CoverPicker from '../../../_components/CoverPicker'
 import EmojiPickerConponent from '../../../_components/EmojiPickerComponent'
 
@@ -22,8 +21,6 @@ const Document = () => {
   let [show, setShow] = useState(false)
   let { documentId } = useParams()
   const {
-    collapse,
-    setCollapse,
     data,
     loadingState: {
       fetchData
@@ -37,12 +34,7 @@ const Document = () => {
     <>
 
 
-      <button onClick={() => setCollapse(!collapse)} className={`absolute top-[20%] h-14 w-14 flex justify-center items-center rounded-full shadow-xl shadow-black left-0 ${collapse ? "visible z-[5001] bg-white" : "invisible bg-transparent"}`}>
-        <ArrowRightFromLine size={"20"} />
-      </button>
 
-
-      <Header logo={collapse} />
       <div className="relative">
         <div className='group relative  cursor-pointer'>
           {fetchData ? (
@@ -57,6 +49,8 @@ const Document = () => {
             className='rounded-b-xl w-full h-[35vh] object-cover group-hover:opacity-70 transition-all duration-200'
             alt=""
           />
+
+
             <label htmlFor="cover" className='absolute inset-0'></label>
             <CoverPicker onUpdate={(e) => {
 
@@ -77,7 +71,7 @@ const Document = () => {
         </div>
 
         <div className={`absolute bottom-[-25px] left-0 right-0 w-full max-w-6xl mx-auto px-4 ${!Boolean(data.emoji) ? 'invisible' : 'visible'}`}>
-          <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] cursor-pointer w-fit z-50">
+          <div className="group relative text-6xl py-3 px-1 transition-all rounded-xl hover:bg-[#f5f9fb] backdrop-blur-3xl  cursor-pointer w-fit z-50">
 
             {data.emoji}
             <Button onClick={() => { update.setEmoji(documentId, null) }} className="absolute -right-4 -top-4 group-hover:visible  invisible p-0 h-9 w-9 text-red-400 bg rounded-full text-sm bg-white">
@@ -99,8 +93,10 @@ const Document = () => {
         </EmojiPickerConponent>}
 
         <div className="flex justify-between items-center">
-          <input className="text-4xl font-bold border-none outline-none w-full" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId, e.target.value)} />
 
+          {fetchData ? <div className="h-10 bg-gray-300 rounded w-1/3 animate-pulse mt-3"></div> : <input
+            placeholder='Document Name'
+            className="text-4xl font-bold border-none outline-none w-full" defaultValue={data.name} onBlur={(e) => update.setTitle(documentId, e.target.value)} />}
 
         </div>
 

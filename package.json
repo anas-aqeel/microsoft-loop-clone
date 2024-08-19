@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^0.0.39",
     "@clerk/nextjs": "^5.2.8",
     "@google/generative-ai": "^0.16.0",
     "@liveblocks/client": "^2.4.0",
@@ -31,6 +32,7 @@
     "@tiptap/extension-table-cell": "^2.5.9",
     "@tiptap/extension-table-header": "^2.5.9",
     "@tiptap/extension-table-row": "^2.5.9",
+    "ai": "^3.3.11",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "emoji-picker-react": "^4.11.1",

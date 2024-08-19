@@ -93,12 +93,7 @@ const WorkSpace = () => {
             </button>
           </div>
         </div>
-        {loading ? (
-          <div className="md:mt-24 flex justify-center items-center w-full flex-col text-center gap-5">
-            <img src="/images/loader.png" alt="No workspace" className='w-32 h-auto animate-spin' />
-            <h3 className="mb-4 text-xl animate-pulse">Loading workspaces</h3>
-          </div>
-        ) : workSpaceList.length == 0 ? (
+        {(workSpaceList.length == 0 && !loading) && (
           <div className="md:mt-8 flex justify-center items-center w-full flex-col text-center">
             <img src="/images/workspace.webp" alt="No workspace" />
             <h3 className="font-medium mb-4 text-2xl">Create a new workspace</h3>
@@ -111,10 +106,9 @@ const WorkSpace = () => {
               New Workspace
             </Button>
           </div>
-        ) : (
-          <DataTable dataList={workSpaceList} type={style} onClickFunc={(id) => push(`/workspace/${id}`)} options={menuData} />
-
         )}
+
+        {(loading || workSpaceList.length > 0) && <DataTable loading={loading} dataList={workSpaceList} type={style} onClickFunc={(id) => push(`/workspace/${id}`)} options={menuData} />}
       </div>
     </>
   )

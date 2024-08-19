@@ -104,22 +104,26 @@ body {
 /* Scrollbar styles */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
-  background-color: #f4f4f4; /* Background color of the scrollbar */
+  background-color: #000000; /* Background color of the scrollbar */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #b3b3b3; /* Color of the scrollbar thumb */
-  border-radius: 4px;
+  background-color: rgb(25, 25, 25); /* Color of the scrollbar thumb */
+  border-radius: 2px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #888888; /* Darker shade when hovering */
+  background-color: rgb(0, 11, 56); /* Darker shade when hovering */
 }
 
 /* Optional: if you want to style the scrollbar track */
 .custom-scrollbar::-webkit-scrollbar-track {
-  background-color: #e0e0e0; /* Track color */
-  border-radius: 4px;
+  background-color: #bfbfbf; /* Track color */
+  border-radius: 2px;
+}
+
+* {
+  @apply custom-scrollbar;
 }
 
 .lb-composer-actions .lb-button {

@@ -37,7 +37,7 @@ const WorkspaceProvider = ({ children }) => {
             let docId = id != "" ? id : uid();
 
             try {
-                await setDoc(doc(db, "Documents", docId), {
+                let document = {
                     title,
                     coverImg,
                     shareable: false,
@@ -45,7 +45,8 @@ const WorkspaceProvider = ({ children }) => {
                     createdBy: user?.primaryEmailAddress?.emailAddress,
                     workspaceId: workspaceid != "" ? workspaceid : workspaceId,
                     id: docId
-                });
+                }
+                await setDoc(doc(db, "Documents", docId), document);
 
                 // Set initial document output with additional fields
                 await setDoc(doc(db, "DocumentOutputs", docId), {
@@ -58,7 +59,7 @@ const WorkspaceProvider = ({ children }) => {
                     updatedAt: new Date(),
                     lastUpdated: new Date(),
                 });
-
+                setData((data) => ({ ...data, documents: [...data.documents, document] }))
                 toast({
                     title: "New Document Created",
                     description: "Your Document has been saved to the workspace."
@@ -73,6 +74,7 @@ const WorkspaceProvider = ({ children }) => {
                 });
             } finally {
                 setPending(false);
+
             }
         } else {
             toast({
@@ -187,7 +189,7 @@ const WorkspaceProvider = ({ children }) => {
 
         fetchWorkspaceData();
         fetchDocumentsData()
-    }, [workspaceId]);
+    }, [workspaceId, documentId]);
 
     useEffect(() => {
         if (documentId && data.documents.length > 0) {
