@@ -2,7 +2,7 @@ import React from 'react';
 
 const Control = () => {
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-8 flex flex-col lg:flex-row items-center gap-x-8">
+    <div className="max-w-[1380px] mx-auto p-4 lg:p-8 flex flex-col lg:flex-row items-center gap-x-8">
       {/* Image Section */}
       <div className="relative w-full lg:w-2/3 flex justify-center lg:justify-start">
         <img

@@ -16,7 +16,7 @@ const Sync = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-8">
+    <div className="max-w-[1380px] mx-auto p-4 lg:p-8">
       <div className="flex flex-col lg:flex-row items-center gap-x-10">
         {/* Text Section */}
         <div className="w-full lg:w-[40%]">

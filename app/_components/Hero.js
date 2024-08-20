@@ -17,10 +17,10 @@ const VideoPlayer = () => {
   }, []);
 
   return (
-    <div className="shadow-xl rounded-lg">
+    <div className="shadow-xl rounded-xl">
       <video
         ref={videoRef}
-        className="w-full h-auto z-[5000]"
+        className="w-full h-auto z-[5000] rounded-xl"
         loop
         poster="/images/poster.png"
         muted
@@ -41,7 +41,7 @@ const Hero = () => {
   return (
     <div className="bg-white">
       {/* Top section with text */}
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 text-center">
+      <div className="max-w-[1380px] mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
           Microsoft Loop
         </h1>
@@ -50,7 +50,7 @@ const Hero = () => {
         </p>
         <div className="mt-8 flex justify-center">
           <a
-            href="#"
+            href="/dashboard"
             className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Get started with Loop
@@ -61,7 +61,7 @@ const Hero = () => {
 
       {/* Bottom section with image */}
       <div className="relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1380px] mx-auto px-4 sm:px-6 lg:px-8">
           <VideoPlayer />
         </div>
       </div>

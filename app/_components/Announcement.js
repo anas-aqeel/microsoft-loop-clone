@@ -7,7 +7,7 @@ const Announcement = () => {
         See the Microsoft Loop announcement
       </h2>
       <a 
-        href="#" 
+        href="https://techcommunity.microsoft.com/t5/microsoft-365-blog/microsoft-loop-built-for-the-new-way-of-work-generally-available/ba-p/3982247" 
         className="text-white hover:underline inline-flex items-center"
       >
         Read the blog 

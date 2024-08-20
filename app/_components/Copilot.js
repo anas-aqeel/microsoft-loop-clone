@@ -2,8 +2,8 @@ import React from 'react';
 
 const Copilot = () => {
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-8">
-      <div className="flex flex-col md:flex-row items-center  bg-white shadow-lg rounded-lg overflow-hidden">
+    <div className="max-w-[1380px] mx-auto p-4 lg:p-8">
+      <div className="flex flex-col md:flex-row items-center  bg-white rounded-lg overflow-hidden">
         {/* Image Section */}
         <div className="w-full md:1/2 lg:w-3/4">
 

@@ -17,18 +17,23 @@ import Footer from './_components/Footer'
 export default function Home() {
   let { push } = useRouter()
   return (
-    <div className=''>
-      <Navbar />
-      <Hero />
+    <div className='bg-white flex w-full flex-col gap-y-12 sm:gap-y-16 md:gap-y-20 lg:gap-y-24 xl:gap-y-32 2xl:gap-y-40'>
+      <div>
+        <Navbar />
+        <Hero />
+      </div>
       <Copilot />
       <Sync />
       <GetStarted />
       <SharedThinking />
       <WorkTogether />
       <Control />
-      <Transform />
-      <Announcement />
-      <Footer />
+      <div>
+
+        <Transform />
+        <Announcement />
+        <Footer />
+      </div>
     </div>
   )
 }

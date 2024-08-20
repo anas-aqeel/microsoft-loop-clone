@@ -35,7 +35,7 @@ const GetStarted = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-8 text-center">
+    <div className="max-w-[1380px] mx-auto p-4 lg:p-8 text-center">
       <h2 className="text-2xl lg:text-3xl font-medium text-gray-900 mb-4">
         Get started easily
       </h2>
