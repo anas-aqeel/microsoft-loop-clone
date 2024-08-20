@@ -69,6 +69,7 @@ const GetStarted = () => {
               loop
               muted
               playsInline
+              poster="/images/poster.png"
               key={tabs[activeTab].videoSrc}  // Ensures video updates when tab changes
             >
               <source src={tabs[activeTab].videoSrc} type="video/mp4" />

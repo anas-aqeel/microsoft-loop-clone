@@ -33,6 +33,7 @@ const Sync = () => {
           <video
             ref={videoRef}
             className="w-full h-auto"
+            poster="/images/poster.png"
             autoPlay
             loop
             muted

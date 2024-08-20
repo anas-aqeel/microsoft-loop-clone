@@ -23,6 +23,7 @@ const SharedThinking = () => {
         <div className="relative w-full lg:w-[60%] flex justify-center items-center lg:justify-end">
           <video
             ref={videoRef}
+            poster="/images/poster.png"
             className="w-full h-auto"
             autoPlay
             loop
